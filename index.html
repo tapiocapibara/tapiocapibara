@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#000000">
 <title>It’s me – Private Diary</title>
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com/3.4.17"></script>
@@ -224,7 +225,6 @@ function applyAccent(c){
   S.setProperty('--brand-2',def?'#f2cc8f':hx(mx(r,255,.5),mx(g,255,.5),mx(b,255,.5)));
   S.setProperty('--brand-dk',def?'#c05a40':hx(mx(r,0,.2),mx(g,0,.2),mx(b,0,.2)));
   S.setProperty('--on-brand',(.299*r+.587*g+.114*b)>175?'#1a1a1a':'#fff');
-  document.querySelectorAll('meta[name=theme-color]').forEach(m=>m.content=c);
   try{localStorage.setItem('its-me-accent',c)}catch(e){}
 }
 function setAccent(c,persist=true){
@@ -888,7 +888,7 @@ window.addEventListener('afterprint',()=>{$('#printArea').innerHTML=''});
 try{
   const icon='data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="9" fill="#e07a5f"/><rect x="9" y="7" width="14" height="18" rx="2.5" fill="#fff"/></svg>');
   const l=document.createElement('link');l.rel='manifest';
-  l.href=URL.createObjectURL(new Blob([JSON.stringify({name:'It’s me',short_name:'It’s me',display:'standalone',background_color:'#faf7f2',theme_color:'#e07a5f',start_url:'.',icons:[{src:icon,sizes:'any',type:'image/svg+xml'}]})],{type:'application/manifest+json'}));
+  l.href=URL.createObjectURL(new Blob([JSON.stringify({name:'It’s me',short_name:'It’s me',display:'standalone',background_color:'#000000',theme_color:'#000000',start_url:'.',icons:[{src:icon,sizes:'any',type:'image/svg+xml'}]})],{type:'application/manifest+json'}));
   document.head.appendChild(l);
 }catch(e){}
 
