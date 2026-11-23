@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<title>It’s me – Private Diary</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/lucide.min.js"></script>
+<script>tailwind.config={darkMode:'class'}</script>
+<script>try{var _a=localStorage.getItem('its-me-accent');if(/^#[0-9a-f]{6}$/i.test(_a||'')){var _n=parseInt(_a.slice(1),16),_r=_n>>16,_g=_n>>8&255,_b=_n&255,_m=function(c,t,k){return Math.round(c+(t-c)*k)},_h=function(r,g,b){return'#'+[r,g,b].map(function(v){return('0'+v.toString(16)).slice(-2)}).join('')},_s=document.documentElement.style;_s.setProperty('--brand',_a);_s.setProperty('--brand-rgb',_r+','+_g+','+_b);_s.setProperty('--brand-2',_h(_m(_r,255,.5),_m(_g,255,.5),_m(_b,255,.5)));_s.setProperty('--brand-dk',_h(_m(_r,0,.2),_m(_g,0,.2),_m(_b,0,.2)));_s.setProperty('--on-brand',(.299*_r+.587*_g+.114*_b)>175?'#1a1a1a':'#fff')}}catch(e){}</script>
+<script>try{var _t=localStorage.getItem('its-me-theme');if(_t==='dark'||_t==='light'){document.documentElement.dataset.t=_t;document.documentElement.classList.toggle('dark',_t==='dark')}}catch(e){}</script>
+<style>
+:root{--brand:#e07a5f;--brand-rgb:224,122,95;--brand-2:#f2cc8f;--brand-dk:#c05a40;--on-brand:#fff;--line:#e7e2dc;--bg:#faf7f2;--card:#fff;--ink:#2b2622;--mute:#8a817a;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px)}
+:root[data-t=dark]{--line:#34302c;--bg:#161412;--card:#1f1c19;--ink:#f1ebe4;--mute:#9b928a}
+body{background:var(--bg);color:var(--ink);font-family:Sarabun,ui-rounded,system-ui,-apple-system,"Segoe UI",sans-serif}
+.bl{border-color:var(--line)}.mute{color:var(--mute)}.card{background:var(--card)}
+.btn{display:inline-flex;align-items:center;gap:.4rem;padding:.4rem .9rem;border-radius:999px;font-weight:600;font-size:.9rem;cursor:pointer}
+.pri{background:var(--brand);color:var(--on-brand)}.pri:disabled{opacity:.4}
+.gh{border:1px solid var(--line)}.gh:hover{background:rgba(var(--brand-rgb),.12)}
+.nav{display:flex;flex-direction:column;align-items:center;gap:2px;padding:.3rem 1.4rem;border-radius:14px;font-size:.72rem;font-weight:600;color:var(--mute)}
+.nav.on{color:var(--brand);background:rgba(var(--brand-rgb),.14)}
+#bnav .navc{pointer-events:auto}.navc{pointer-events:auto;display:flex;align-items:center;justify-content:center;border-radius:999px;flex-shrink:0}.nav.navc{width:46px;height:46px;padding:0;border:1px solid var(--line);color:var(--mute);background:var(--card)}.nav.navc.on{color:var(--brand);background:rgba(var(--brand-rgb),.14);border-color:var(--brand)}.navmain{width:60px;height:60px;background:var(--brand);color:var(--on-brand);box-shadow:0 4px 12px rgba(var(--brand-rgb),.45)}.navmain:active{transform:scale(.96)}
+input,textarea,select{background:transparent;color:var(--ink);outline:none}
+select option{background:var(--card);color:var(--ink)}
+.pill{border:1px solid var(--line);border-radius:999px;padding:.15rem .6rem;font-size:.8rem;cursor:pointer;display:inline-flex;align-items:center;gap:.3rem}
+.pill.on{color:#fff;border-color:transparent}
+.lnk{color:var(--brand);font-size:.85rem;cursor:pointer}
+.mention{color:var(--brand);font-weight:600}
+.dis{opacity:.4;cursor:not-allowed}
+.rec{animation:p 1s infinite}@keyframes p{50%{opacity:.4}}
+#printArea{display:none}
+@media print{body>*:not(#printArea){display:none!important}#printArea{display:block!important;color:#000;background:#fff;font-size:12pt}body{background:#fff}}
+.blue{background:#1d9bf0;color:#fff}.blue:disabled{opacity:.4}
+@media (max-width:1023px){#composer{display:none}#composer.open{display:flex;flex-direction:column;position:fixed;inset:0;height:100dvh;z-index:40;background:var(--bg)}#composer.open #txt{min-height:36vh}}
+/* ---------- Profile button + settings side panel ---------- */
+#ptop{position:fixed;top:env(safe-area-inset-top,0px);left:0;right:0;z-index:30;pointer-events:none}
+#ptop.open{z-index:48}
+body.pv #ptop{display:none}
+.pbar{margin-left:-.5rem}.pact{display:inline-flex;align-items:center;justify-content:center;width:2.25rem;height:2.25rem;border-radius:999px;color:var(--mute,#6b7280);transition:background .15s,color .15s}.pact:hover,.pact:focus-visible{color:var(--brand);background:rgba(var(--brand-rgb),.12)}
+#ptop .in{max-width:36rem;margin:0 auto;padding:12px 12px 0;display:flex;align-items:center;gap:.65rem}
+#pbtn{flex:none}
+#pname{min-width:0;max-width:min(220px,calc(88vw - 110px));overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:700;font-size:1.05rem;line-height:1.2;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:999px;padding:.2rem .8rem;pointer-events:none;opacity:0;visibility:hidden;transform:translateX(-6px);transition:opacity .2s ease,transform .2s ease,visibility 0s linear .2s}
+#ptop.sopen #pname{opacity:1;visibility:visible;transform:none;transition:opacity .2s ease,transform .2s ease,visibility 0s}
+@media (prefers-reduced-motion:reduce){#pname{transition-duration:.01s!important}}
+@media(min-width:768px){#ptop .in{max-width:42rem}}
+#pbtn{pointer-events:auto;width:40px;height:40px;border-radius:999px;overflow:hidden;display:flex;align-items:center;justify-content:center;background:var(--brand);color:var(--on-brand);border:2px solid var(--card);box-shadow:0 2px 8px rgba(0,0,0,.3);cursor:pointer}
+#pbtn img{width:100%;height:100%;object-fit:cover}
+#pbtn:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+#pbtn{box-sizing:border-box}
+#spback{position:fixed;inset:0;z-index:44;background:rgba(0,0,0,.28);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .28s ease,visibility 0s linear .28s}
+#spback.open{opacity:1;visibility:visible;pointer-events:auto;transition:opacity .28s ease,visibility 0s}
+#spanel{position:fixed;top:0;bottom:0;left:0;width:min(360px,88vw);box-sizing:border-box;z-index:46;overflow-y:auto;overscroll-behavior:contain;background:var(--card);color:var(--ink);border:1px solid var(--line);border-left:0;border-radius:0 16px 16px 0;outline:none;padding:calc(env(safe-area-inset-top,0px) + 64px) 1.1rem 1.1rem calc(1.1rem + env(safe-area-inset-left,0px));box-shadow:0 10px 30px rgba(0,0,0,.28);transform:translateX(-100%);visibility:hidden;will-change:transform;transition:transform .28s cubic-bezier(.22,.61,.36,1),visibility 0s linear .28s}
+#spanel.open{transform:none;visibility:visible;transition:transform .28s cubic-bezier(.22,.61,.36,1),visibility 0s}
+.sph{display:flex;align-items:center;gap:.75rem;padding-bottom:.85rem;margin-bottom:.85rem;border-bottom:1px solid var(--line)}
+.sph .sav{width:44px;height:44px;flex:none;border-radius:999px;overflow:hidden;background:var(--brand);color:var(--on-brand);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.25rem}
+.sph .sav img{width:100%;height:100%;object-fit:cover;display:block}
+.sph .sinfo{min-width:0;flex:1}
+.sph .snm{font-weight:700;font-size:1.05rem;line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tgl{position:relative;flex:none;width:68px;height:34px;border-radius:999px;border:1px solid var(--line);background:var(--bg);cursor:pointer;padding:0;display:inline-block}
+.tgl .tk{position:absolute;top:50%;margin-top:-8px;width:16px;height:16px;color:var(--mute);opacity:.85}.tgl .tk.l{left:9px}.tgl .tk.r{right:9px}
+.tgl .th{position:absolute;top:3px;left:3px;width:26px;height:26px;border-radius:999px;background:var(--brand);color:var(--on-brand);display:flex;align-items:center;justify-content:center;transition:transform .2s ease}
+.tgl[aria-checked=true] .th{transform:translateX(34px)}
+.tgl .tk svg,.tgl .th svg{display:block;width:16px;height:16px}.tgl .th .s,.tgl .th .m{display:flex;align-items:center;justify-content:center}.tgl .th .m,.tgl[aria-checked=true] .th .s{display:none}.tgl[aria-checked=true] .th .m{display:flex}
+.tgl:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+.tgl.lang{width:92px}
+.tgl.lang .tx{position:absolute;top:0;bottom:0;display:flex;align-items:center;font-size:.78rem;font-weight:700;line-height:1;color:var(--mute)}.tgl.lang .tx.l{left:12px}.tgl.lang .tx.r{right:11px}
+.tgl.lang .th{width:42px;font-size:.78rem;font-weight:700;line-height:1}
+.tgl.lang[aria-checked=true] .th{transform:translateX(44px)}
+@media (prefers-reduced-motion:reduce){#spanel,#spback{transition-duration:.01s!important}}
+/* ---------- Profile content tabs (All / Photos / Videos) ---------- */
+#ptabs{display:flex;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.ptab{flex:1;display:flex;align-items:center;justify-content:center;gap:.4rem;padding:.7rem 0;font-weight:600;font-size:.85rem;color:var(--mute);border-bottom:2px solid transparent;margin-bottom:-1px;cursor:pointer;transition:color .2s,border-color .2s}
+.ptab.on{color:var(--brand);border-bottom-color:var(--brand)}
+.ptab:focus-visible{outline:2px solid var(--brand);outline-offset:-2px}
+.pin{animation:pin .24s ease}@keyframes pin{from{opacity:0}to{opacity:1}}
+.gtile{position:relative;overflow:hidden;background:rgba(127,127,127,.15);cursor:pointer;display:block;width:100%}
+.gtile img,.gtile video{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
+.gtile:focus-visible{outline:2px solid var(--brand);outline-offset:-2px}
+.reels{scrollbar-width:none;scroll-snap-type:y mandatory}.reels::-webkit-scrollbar{display:none}
+.reel{scroll-snap-align:start;scroll-snap-stop:always}
+.rseek{-webkit-appearance:none;appearance:none;display:block;width:100%;height:26px;margin:0;background:transparent;cursor:pointer;touch-action:none;--p:0%}
+.rseek::-webkit-slider-runnable-track{height:4px;border-radius:99px;background:linear-gradient(to right,#fff var(--p),rgba(255,255,255,.35) var(--p))}
+.rseek::-moz-range-track{height:4px;border-radius:99px;background:rgba(255,255,255,.35)}
+.rseek::-moz-range-progress{height:4px;border-radius:99px;background:#fff}
+.rseek::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;margin-top:-5px;border-radius:50%;background:#fff;border:0;box-shadow:0 0 4px rgba(0,0,0,.5)}
+.rseek::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:#fff;border:0;box-shadow:0 0 4px rgba(0,0,0,.5)}
+.rseek:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+.rbtn{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;color:#fff;cursor:pointer}
+.rbtn:focus-visible{outline:2px solid var(--brand)}
+@media (prefers-reduced-motion:reduce){.pin{animation:none}.ptab{transition:none}}
+.btn:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+/* ---------- Threads ---------- */
+:root{--tl:rgba(138,129,122,.5)}
+.tcol{position:relative}
+.tcol.up::before,.tcol.dn::after{content:"";position:absolute;left:50%;width:2px;margin-left:-1px;background:var(--tl);border-radius:2px}
+.tcol.up::before{top:calc(var(--tp,16px)*-1);height:var(--tp,16px)}
+.tcol.dn::after{top:48px;bottom:calc(var(--tb,16px)*-1)}
+.mini .tcol,#cav{--tp:12px;--tb:0px}
+.pmenu button{display:flex;width:100%;align-items:center;gap:.6rem;padding:.55rem .9rem;font-size:.9rem;text-align:left}
+.pmenu button:hover{background:rgba(var(--brand-rgb),.12)}.pmenu .danger{color:#ef4444}
+article[data-open]{cursor:pointer}article[data-open]:hover{background:rgba(127,127,127,.04)}
+/* horizontal gallery for the 3 / 5 / 6 item vertical (9:16) layouts in the timeline */
+.hs{display:flex;flex-wrap:nowrap;gap:4px;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;scroll-snap-type:x proximity;scrollbar-width:thin;cursor:grab;padding-bottom:2px}
+.hs.hs-drag{cursor:grabbing;scroll-snap-type:none;user-select:none}
+.hs>.hst{flex:0 0 calc((100% - 8px)/3);min-width:0;scroll-snap-align:start}
+.hs.hs-more>.hst{flex-basis:calc((100% - 12px)/3.25)}
+[data-tadd]:disabled{opacity:.4;cursor:not-allowed}
+.bk-msg{border-radius:12px;padding:.55rem .75rem;font-size:.85rem;line-height:1.35;margin-top:.6rem;word-break:break-word}
+.bk-ok{border:1px solid #10b981;color:#10b981;background:rgba(16,185,129,.08)}
+.bk-err{border:1px solid #ef4444;color:#ef4444;background:rgba(239,68,68,.08)}
+/* ---------- Wallpaper (Timeline / Create Post / Calendar only) ----------
+   #wp is a fixed layer BEHIND the page (z-index:-1). Only the image inside it gets the opacity,
+   so text, buttons, icons and the sidebar are never faded. The sidebar keeps its own opaque background. */
+#wp{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden;display:none}
+body.wp-on #wp{display:block}
+#wpc{position:absolute;inset:0;z-index:-1;pointer-events:none;overflow:hidden;display:none}
+/* Create Post window (mobile full-screen): keeps its SOLID background; the wallpaper is a layer inside it, under its content */
+@media (max-width:1023px){body.wp-on #composer.open #wpc{display:block}}
+.wpl img{position:absolute;left:50%;top:50%;max-width:none;transform-origin:center;opacity:var(--wo,1);user-select:none;-webkit-user-drag:none}   /* size + position are set from JS (cover size x zoom, plus the dragged offset) */
+/* View Post: the sticky title bar keeps a soft version of the page colour so the wallpaper still shows around it */
+body.wp-on #view-post>.sticky{background:color-mix(in srgb,var(--bg) 82%,transparent)!important;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+/* Preview Mode: drag the wallpaper with mouse or touch (page scrolling by touch is paused while previewing) */
+body.wp-prev main,body.wp-prev main *{touch-action:none}
+body.wp-prev main{cursor:grab}
+body.wp-drag,body.wp-drag *{cursor:grabbing!important}
+#wpdone,#wpbar{display:none}
+body.wp-prev #ptop{display:none}
+body.wp-prev #wpdone{display:inline-flex;position:fixed;top:calc(env(safe-area-inset-top,0px) + 12px);right:12px;z-index:55;box-shadow:0 2px 10px rgba(0,0,0,.3)}
+body.wp-prev #wpbar{display:flex;position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--navh,84px) + 8px);z-index:55;width:min(34rem,calc(100vw - 16px));box-sizing:border-box;flex-wrap:wrap;align-items:center;justify-content:center;gap:.5rem .75rem;padding:.6rem .75rem;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:18px;box-shadow:0 6px 24px rgba(0,0,0,.28)}
+body.wp-prev #composer.open .cbar{padding-right:6.5rem}
+.wpb{width:36px;height:36px;flex:none;border-radius:999px;border:1px solid var(--line);font-size:1.35rem;font-weight:700;line-height:1;display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
+.wpb:hover:not(:disabled){background:rgba(var(--brand-rgb),.12);color:var(--brand)}.wpb:disabled{opacity:.4;cursor:not-allowed}
+.wpb:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+#wpop{flex:1;min-width:110px;accent-color:var(--brand);cursor:pointer}
+</style>
+</head>
+<body>
+<div id="wp" class="wpl" aria-hidden="true"><img alt="" draggable="false"></div>
+<main class="mx-auto min-h-screen w-full max-w-xl border-x bl pb-28 md:max-w-2xl">
+  <section id="view-timeline">
+    <div id="profile"></div>
+    <div id="ptabs" role="tablist" aria-label="Profile content" data-ta="aria-label"></div>
+    <div id="pall">
+      <div id="composer" class="border-y bl"></div>
+      <div id="feed"></div>
+    </div>
+    <div id="pphotos" class="hidden" role="tabpanel" aria-label="Photos" data-ta="aria-label"></div>
+    <div id="pvideos" class="hidden" role="tabpanel" aria-label="Videos" data-ta="aria-label"></div>
+  </section>
+  <section id="view-calendar" class="hidden">
+    <div id="cal" class="p-4 pt-16"></div>
+    <div id="dayEntries"></div>
+  </section>
+  <section id="view-post" class="hidden">
+    <div class="sticky z-20 border-b bl px-2" style="top:env(safe-area-inset-top,0px);background:var(--bg);display:grid;grid-template-columns:3rem 1fr 3rem;align-items:center;height:4rem"><div class="flex justify-start"><button type="button" class="p-2" data-pback aria-label="Back to All" data-ta="aria-label"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg></button></div><h2 id="pvtitle" class="text-center text-lg font-bold" data-i18n="Post">Post</h2><div id="pvmenu" class="flex justify-end"></div></div>
+    <div id="pv"></div>
+  </section>
+</main>
+
+<button type="button" id="wpdone" class="btn pri" data-act="wpdone" data-i18n="Done">Done</button>
+<div id="wpbar" role="group" aria-label="Wallpaper controls" data-ta="aria-label">
+  <div class="flex items-center gap-2"><button type="button" class="wpb" data-act="wpzo" aria-label="Zoom out" title="Zoom out" data-ta="aria-label,title">&minus;</button><span id="wpzv" class="w-12 text-center text-sm font-semibold" aria-live="polite">100%</span><button type="button" class="wpb" data-act="wpzi" aria-label="Zoom in" title="Zoom in" data-ta="aria-label,title">+</button></div>
+  <label class="flex min-w-0 flex-1 items-center gap-2 text-sm font-semibold" style="flex-basis:12rem"><span data-i18n="Opacity">Opacity</span><input type="range" id="wpop" min="0" max="100" step="1" value="60"><span id="wpov" class="w-10 text-right text-sm">60%</span></label>
+  <button type="button" class="btn gh" data-act="wpcancel" data-i18n="Cancel">Cancel</button>
+</div>
+
+<nav id="bnav" class="fixed inset-x-0 bottom-0 z-30" style="padding-bottom:env(safe-area-inset-bottom,0px);background:transparent;border:0;box-shadow:none;pointer-events:none">
+  <div class="mx-auto flex max-w-xl items-center justify-center gap-7 py-2 md:max-w-2xl">
+    <button type="button" class="navc nav" data-tab="timeline" aria-label="Timeline" title="Timeline" data-ta="aria-label,title"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></button>
+    <button type="button" class="navc navmain" data-act="newpost" aria-label="Create post" title="Create post" data-ta="aria-label,title"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg></button>
+    <button type="button" class="navc nav" data-tab="calendar" aria-label="Calendar" title="Calendar" data-ta="aria-label,title"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><rect x="7" y="13" width="2" height="2" rx=".4" fill="currentColor" stroke="none"/><rect x="11" y="13" width="2" height="2" rx=".4" fill="currentColor" stroke="none"/><rect x="15" y="13" width="2" height="2" rx=".4" fill="currentColor" stroke="none"/><rect x="7" y="17" width="2" height="2" rx=".4" fill="currentColor" stroke="none"/><rect x="11" y="17" width="2" height="2" rx=".4" fill="currentColor" stroke="none"/><rect x="15" y="17" width="2" height="2" rx=".4" fill="currentColor" stroke="none"/><g fill="currentColor" stroke="none"><rect x="7" y="13" width="2.2" height="2.2" rx=".5"/><rect x="11" y="13" width="2.2" height="2.2" rx=".5"/><rect x="15" y="13" width="2.2" height="2.2" rx=".5"/><rect x="7" y="17" width="2.2" height="2.2" rx=".5"/><rect x="11" y="17" width="2.2" height="2.2" rx=".5"/><rect x="15" y="17" width="2.2" height="2.2" rx=".5"/></g></svg></button>
+  </div>
+</nav>
+
+
+<div id="ptop"><div class="in"><button id="pbtn" type="button" data-act="settings" aria-label="Profile and settings" data-ta="aria-label" aria-haspopup="dialog" aria-expanded="false" aria-controls="spanel" data-profile-icon><i data-lucide="user"></i></button><span id="pname" data-profile-name aria-live="polite"></span></div></div>
+<div id="spback" data-act="closepanel"></div>
+<aside id="spanel" role="dialog" aria-label="Settings" data-ta="aria-label" tabindex="-1"><div id="spbody"></div></aside>
+
+<div id="sheet" class="fixed inset-0 z-50 hidden items-end justify-center bg-black/50 sm:items-center sm:p-4">
+  <div id="sheetBody" class="card max-h-[92vh] w-full max-w-md overflow-y-auto rounded-t-2xl p-5 sm:rounded-2xl"></div>
+</div>
+<div id="ov" class="fixed inset-0 z-[70] hidden items-center justify-center bg-black/90"></div>
+<div id="dlg" class="fixed inset-0 z-[90] hidden items-center justify-center bg-black/50 p-4"></div>
+<div id="printArea"></div>
+
+<script src="i18n.js"></script>
+<script src="imageeditor.js"></script>
+<script src="linkpreview.js"></script>
+<script src="composer.js"></script>
+<script src="threads.js"></script>
+<script>
+const MOODS={happy:['😊','#f59e0b','Happy'],calm:['😌','#10b981','Calm'],neutral:['😐','#94a3b8','Neutral'],sad:['😢','#3b82f6','Sad'],stressed:['😣','#ef4444','Stressed'],excited:['🤩','#ec4899','Excited'],tired:['😴','#8b5cf6','Tired'],grateful:['🙏','#06b6d4','Grateful']};
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const icons=()=>{try{window.lucide&&lucide.createIcons()}catch(e){}};
+
+/* ---------- IndexedDB ---------- */
+let dbp=null; /* opened per signed-in account by openDb() — nothing is read before sign-in */
+const openDb=name=>{dbp=new Promise((ok,no)=>{const q=indexedDB.open(name,1);q.onupgradeneeded=()=>{q.result.createObjectStore('posts',{keyPath:'id'});q.result.createObjectStore('meta')};q.onsuccess=()=>ok(q.result);q.onerror=no})};
+const run=async(st,mode,fn)=>{const d=await dbp;return new Promise((res,rej)=>{const t=d.transaction(st,mode);const r=fn(t.objectStore(st));t.oncomplete=()=>res(r&&r.result);t.onerror=()=>rej(t.error)})};
+const putPost=p=>run('posts','readwrite',s=>s.put(p));
+const delPost=id=>run('posts','readwrite',s=>s.delete(id));
+const allPosts=()=>run('posts','readonly',s=>s.getAll());
+const getMeta=k=>run('meta','readonly',s=>s.get(k));
+const setMeta=(k,v)=>run('meta','readwrite',s=>s.put(v,k));
+
+/* ---------- State ---------- */
+let posts=[],prof={name:'Me',bio:'My private diary.',avatar:null,banner:null},hl=[],MI={},MN={},mEdit=null,pf=null,st=null,theme='light';
+let tab='timeline',fDay='',draft=emptyDraft(),editing=null,ed=null,exp=new Set(),calM=new Date(),rec=null,hv=null;
+const uc=new WeakMap();
+let pview=null,lastY=0,adraft=newAdd('');
+const url=b=>{if(!uc.has(b))uc.set(b,URL.createObjectURL(b));return uc.get(b)};
+const dayKey=t=>{const d=new Date(t);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+const fmt=t=>{const d=new Date(t);return fmtDate(d,{month:'short',day:'numeric',year:'numeric'})+' • '+fmtTime(d)};   /* EN: "Nov 21, 2026 • 3:05 PM"   TH: "21 พ.ย. 2026 • 15:05" (see i18n.js) */
+const dName=(P=prof)=>P.name==='Me'?tr('Me'):P.name,dBio=(P=prof)=>P.bio==='My private diary.'?tr('My private diary.'):P.bio;
+const mi=(k,px=18,M=MI)=>M[k]?`<img src="${url(M[k])}" style="width:${px}px;height:${px}px" class="inline-block rounded-[3px] object-contain align-middle">`:`<span style="font-size:${px*.9}px;line-height:1">${MOODS[k][0]}</span>`;
+const avatarHtml=(c='h-11 w-11',P=prof)=>P.avatar?`<img src="${url(P.avatar)}" class="${c} shrink-0 rounded-full object-cover">`:`<div class="${c} flex shrink-0 items-center justify-center rounded-full text-xl font-bold" style="background:var(--brand);color:var(--on-brand)">${esc((dName(P)||'M')[0].toUpperCase())}</div>`;
+const ACC_DEF='#e07a5f';let ACC=ACC_DEF,accT;
+function applyAccent(c){
+  if(!/^#[0-9a-f]{6}$/i.test(c||''))c=ACC_DEF;c=c.toLowerCase();ACC=c;
+  const n=parseInt(c.slice(1),16),r=n>>16,g=n>>8&255,b=n&255,mx=(v,t,k)=>Math.round(v+(t-v)*k),hx=(R,G,B)=>'#'+[R,G,B].map(v=>v.toString(16).padStart(2,'0')).join(''),S=document.documentElement.style,def=c===ACC_DEF;
+  S.setProperty('--brand',c);S.setProperty('--brand-rgb',r+','+g+','+b);
+  S.setProperty('--brand-2',def?'#f2cc8f':hx(mx(r,255,.5),mx(g,255,.5),mx(b,255,.5)));
+  S.setProperty('--brand-dk',def?'#c05a40':hx(mx(r,0,.2),mx(g,0,.2),mx(b,0,.2)));
+  S.setProperty('--on-brand',(.299*r+.587*g+.114*b)>175?'#1a1a1a':'#fff');
+}
+function setAccent(c,persist=true){
+  applyAccent(c);try{localStorage.setItem('its-me-accent',ACC)}catch(e){}
+  const p=document.querySelector('[data-acc]'),h=document.querySelector('[data-acch]');if(p&&p.value!==ACC)p.value=ACC;if(h)h.textContent=ACC.toUpperCase();
+  if(persist){clearTimeout(accT);accT=setTimeout(()=>setMeta('accent',ACC).catch(console.error),200)}
+}
+function setTheme(t){theme=t;document.documentElement.dataset.t=t;document.documentElement.classList.toggle('dark',t==='dark')}
+/* ---------- Language: English (EN) / Thai (ไทย). Takes effect immediately and is saved (localStorage + app database). ---------- */
+function refreshComposerLang(){
+  const t=$('#txt'),g=$('#tg'),tv=t?t.value:'',gv=g?g.value:'';      /* keep whatever is being typed */
+  renderComposer();
+  $('#txt').value=tv;const g2=$('#tg');if(g2)g2.value=gv;
+  pills();prev();refreshComposer();
+  if(rec){$('#recl').classList.remove('hidden');$('#mic').style.color='#ef4444'}
+}
+function setLang(l){
+  if(l!=='th'&&l!=='en')l='en';
+  const old=LANG;LANG=l;
+  try{localStorage.setItem(LANG_KEY,l)}catch(e){}
+  setMeta('lang',l).catch(console.error);
+  applyStaticI18n();applyMoodNames();
+  refreshComposerLang();renderAll();
+  if(panelOpen()){
+    renderSettings();
+    const b=document.querySelector('.tgl.lang');   /* replay the switch animation after the panel is redrawn */
+    if(b){b.setAttribute('aria-checked',String(old==='th'));void b.offsetWidth;requestAnimationFrame(()=>b.setAttribute('aria-checked',String(LANG==='th')));b.focus({preventScroll:true})}
+  }
+}
+
+/* ---------- Sheet / overlay ---------- */
+const openSheet=h=>{$('#sheetBody').innerHTML=h;$('#sheet').classList.replace('hidden','flex');icons()};
+const closeSheet=()=>$('#sheet').classList.replace('flex','hidden');
+const openOv=h=>{$('#ov').innerHTML=h;$('#ov').classList.replace('hidden','flex')};
+const closeOv=()=>{$('#ov').classList.replace('flex','hidden');$('#ov').innerHTML='';hv=null};
+
+/* ---------- Profile + Highlights ---------- */
+function renderProfile(){
+  const e=!!pf,P=e?pf:prof,cam='<i data-lucide="camera"></i>';
+  $('#profile').innerHTML=`<div class="relative h-36 overflow-hidden sm:h-48" style="background:linear-gradient(120deg,#e07a5f,#f2cc8f)">${P.banner?`<img src="${url(P.banner)}" class="h-full w-full object-cover">`:''}${e?`<label class="absolute inset-0 flex cursor-pointer items-center justify-center gap-2 bg-black/40 text-white">${cam} ${tr('Change banner')}<input type="file" accept="image/*" data-pf="banner" class="hidden"></label>`:''}</div>
+  <div class="-mt-16 flex justify-center"><div class="relative rounded-full border-4" style="border-color:var(--bg)">${avatarHtml('h-32 w-32',{...P,avatar:profImg()})}${e?`<label class="absolute inset-0 flex cursor-pointer items-center justify-center rounded-full bg-black/40 text-white">${cam}<input type="file" accept="image/*" data-pf="avatar" class="hidden"></label>`:''}</div></div>
+  <div class="px-4 pt-2 text-center">${e?`<input id="pn" value="${esc(P.name)}" maxlength="40" class="w-full border-b bl text-center text-xl font-bold" placeholder="${tr('Display name')}"><textarea id="pb" rows="2" maxlength="200" class="mt-2 w-full resize-none border-b bl text-center text-sm" placeholder="${tr('Bio')}">${esc(P.bio)}</textarea>`:`<h1 class="text-xl font-bold">${esc(dName(P))}</h1><p class="mute whitespace-pre-wrap text-sm">${esc(dBio(P))}</p>`}
+  <p class="mute mt-1 text-xs">${posts.length} ${tr(posts.length===1?'post':'posts')}</p>
+  <div class="mt-2 flex justify-center gap-2">${e?'<button class="btn pri" data-act="savepf">'+tr('Save')+'</button><button class="btn gh" data-act="cancelpf">'+tr('Cancel')+'</button>':'<button class="btn gh justify-center" data-act="editpf"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="shrink-0"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>'+tr('Edit profile')+'</button>'}</div></div>
+  <div class="flex gap-4 overflow-x-auto px-4 py-4">
+    <button class="flex shrink-0 flex-col items-center gap-1" data-act="newhl"><span class="flex h-16 w-16 items-center justify-center rounded-full border-2 border-dashed bl mute"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span><span class="text-xs">${tr('New')}</span></button>
+    ${hl.map(h=>{if(!e||!hlEd)return `<button class="flex w-16 shrink-0 flex-col items-center gap-1" data-hl="${h.id}"><span class="h-16 w-16 overflow-hidden rounded-full p-[2px]" style="background:linear-gradient(45deg,var(--brand),var(--brand-2))"><img src="${url(h.cover)}" class="h-full w-full rounded-full border-2 object-cover" style="border-color:var(--bg)"></span><span class="w-full truncate text-xs">${esc(h.title)}</span></button>`;
+      /* Edit Profile: same layout, but the cover is a file picker and the name is an inline input */
+      const d=hlEd[h.id]||{},cv=d.cover||h.cover,ti=d.title!==undefined?d.title:h.title;
+      return `<div class="flex w-16 shrink-0 flex-col items-center gap-1"><label class="block h-16 w-16 cursor-pointer overflow-hidden rounded-full p-[2px]" style="background:linear-gradient(45deg,var(--brand),var(--brand-2))" title="${tr('Change cover')}"><img src="${url(cv)}" class="h-full w-full rounded-full border-2 object-cover" style="border-color:var(--bg)"><input type="file" accept="image/*" data-hlc="${h.id}" class="hidden" aria-label="${tr('Change cover')}"></label><input data-hln="${h.id}" value="${esc(ti)}" maxlength="20" class="w-full border-b bl bg-transparent text-center text-xs" aria-label="${tr('Highlight name')}"></div>`}).join('')}
+  </div>`;
+  if(e){$('#pn').oninput=x=>pf.name=x.target.value;$('#pb').oninput=x=>pf.bio=x.target.value}
+}
+let hlDraft=null,hlEd=null;   /* hlEd: unsaved Highlight name/cover edits while Edit Profile is open, {id:{title,cover}} */
+function hlForm(){
+  openSheet(`<h2 class="mb-3 text-lg font-bold">${tr('New highlight')}</h2>
+  <input id="ht" maxlength="20" placeholder="${tr('Title')}" class="w-full rounded-xl border bl p-2">
+  <label class="mt-3 flex cursor-pointer items-center gap-3"><span id="hc" class="flex h-16 w-16 items-center justify-center overflow-hidden rounded-full border bl mute">${tr('cover')}</span><span class="btn gh">${tr('Choose cover (image / GIF)')}</span><input type="file" accept="image/*" data-hcover class="hidden"></label>
+  <div class="mt-5 flex gap-2"><button class="btn pri flex-1 justify-center" data-act="savehl">${tr('Save')}</button><button class="btn gh flex-1 justify-center" data-act="closesheet">${tr('Cancel')}</button></div>`);
+  hlDraft=null;
+}
+function showHl(id,i=0){
+  const h=hl.find(x=>x.id===id);if(!h)return closeOv();const n=h.items.length;i=Math.max(0,Math.min(i,n-1));hv={id,i};
+  openOv(`<div class="relative overflow-hidden rounded-2xl bg-neutral-900 text-white" style="height:min(90vh,calc(96vw*16/9));aspect-ratio:9/16">
+  ${n?`<img src="${url(h.items[i])}" class="h-full w-full object-cover">`:'<div class="flex h-full items-center justify-center text-sm opacity-70">'+tr('No photos yet')+'</div>'}
+  <div class="absolute inset-x-2 top-2 flex gap-1">${h.items.map((_,j)=>`<span class="h-1 flex-1 rounded ${j<=i?'bg-white':'bg-white/30'}"></span>`).join('')}</div>
+  <div class="absolute inset-x-3 top-5 flex items-center justify-between bg-gradient-to-b from-black/50 to-transparent pb-4"><b>${esc(h.title)}</b><button data-hx="close" class="px-2 text-2xl">×</button></div>
+  <button data-hx="prev" class="absolute inset-y-20 left-0 w-1/3" aria-label="${tr('Previous')}"></button><button data-hx="next" class="absolute inset-y-20 right-0 w-1/3" aria-label="${tr('Next')}"></button>
+  <div class="absolute inset-x-3 bottom-3 flex flex-wrap justify-between gap-2"><label class="btn pri cursor-pointer">${tr('+ Add photos')}<input type="file" multiple accept="image/*" data-hadd class="hidden"></label><span class="flex gap-2">${n?'<button class="btn gh bg-black/40" data-hx="del">'+tr('Delete photo')+'</button>':''}<button class="btn gh bg-black/40" data-hx="delhl">${tr('Delete album')}</button></span></div></div>`);
+}
+
+/* ---------- Composer ---------- */
+function prev(){
+  const rm=i=>`<button data-rm="${i}" class="absolute right-1 top-1 z-10 rounded-full bg-black/60 px-2 text-white" aria-label="${tr('Remove')}">×</button>`;
+  $('#prev').innerHTML=draft.media.map((m,i)=>m.type==='audio'?`<div class="relative col-span-2 overflow-hidden rounded-xl border bl p-2">${mediaTag(m)}${rm(i)}</div>`
+    :m.type==='video'?`<div class="relative col-span-2 overflow-hidden rounded-xl border bl"><div class="aspect-video">${mediaTag(m)}</div><div class="mute truncate border-t bl px-2 py-1 text-xs">${esc(m.blob.name||tr('Video'))} · ${fmtSize(m.blob.size)}</div>${rm(i)}</div>`
+    :`<div class="relative aspect-square overflow-hidden rounded-xl border bl">${mediaTag(m)}${rm(i)}${editImgBtn('main',i)}</div>`).join('');
+  syncBtns();
+}
+async function toggleRec(){
+  if(rec){rec.stop();return}
+  if(draft.media.some(m=>m.type==='image'||m.type==='video'))return mediaNote(tr('Remove photos and videos to record a voice note.'));
+  try{
+    const s=await navigator.mediaDevices.getUserMedia({audio:true}),chunks=[];rec=new MediaRecorder(s);
+    rec.ondataavailable=e=>chunks.push(e.data);
+    rec.onstop=()=>{s.getTracks().forEach(t=>t.stop());draft.media.push({type:'audio',blob:new Blob(chunks,{type:rec.mimeType||'audio/webm'})});rec=null;$('#recl').classList.add('hidden');$('#mic').style.color='var(--brand)';prev()};
+    rec.start();$('#recl').classList.remove('hidden');$('#mic').style.color='#ef4444';mediaUi();
+  }catch(e){alert(tr('Microphone access was denied or is unavailable.'))}
+}
+const mediaTag=(m,sq)=>{const u=url(m.blob);return m.type==='image'?`<img src="${u}" data-zoom="${u}" class="h-full w-full cursor-zoom-in object-cover">`:m.type==='video'?`<video src="${u}" controls playsinline class="h-full w-full bg-black object-cover"></video>`:`<audio src="${u}" controls class="w-full"></audio>`};
+
+/* ---------- Feed ---------- */
+const isLong=t=>t.length>260||t.split('\n').length>6;
+function editBox(p){
+  const col=(k,label,v)=>`<span class="mute inline-flex items-center gap-1 text-xs">${label}<input type="color" data-ec="${k}" value="${v}" class="h-6 w-6 cursor-pointer rounded border-0 bg-transparent p-0"><button class="lnk" data-ecr="${k}" title="${tr('Reset color')}" aria-label="${tr('Reset color')}">↺</button></span>`;
+  const em=ed.media,en=em.filter(m=>m.type==='image').length,ev=em.filter(m=>m.type==='video').length,tot=en+ev,offI=tot>=MAX_MEDIA,offV=offI;
+  const rm=i=>`<button type="button" data-erm="${i}" class="absolute right-1 top-1 z-10 rounded-full bg-black/60 px-2 text-white" aria-label="${tr('Remove')}">×</button>`;
+  const prevs=em.map((m,i)=>m.type==='video'?`<div class="relative col-span-2 overflow-hidden rounded-xl border bl"><div class="aspect-video">${mediaTag(m)}</div>${rm(i)}</div>`:m.type==='image'?`<div class="relative aspect-square overflow-hidden rounded-xl border bl">${mediaTag(m)}${rm(i)}</div>`:`<div class="relative col-span-2 rounded-xl border bl p-2 pr-8">${mediaTag(m)}${rm(i)}</div>`).join('');
+  const att=`<div class="eprev mt-2 grid grid-cols-2 gap-2">${prevs}</div><p class="mute mt-1 text-xs" role="status" aria-live="polite">${ed.err?`<span class="text-red-500">${esc(ed.err)}</span>`:tot?`${tot}/${MAX_MEDIA}${tot>=MAX_MEDIA?' · '+tr('limit reached'):''} · ${tr('tap × to remove')}`:tr('Up to {n} photos or videos per post',{n:MAX_MEDIA})}</p>
+  <div class="mt-1 flex items-center gap-1"><label class="cursor-pointer p-2 ${offI?'dis':''}" style="color:var(--brand)" title="${tr('Add photos')}"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg><input type="file" multiple accept="image/*" data-ef="image" class="hidden" ${offI?'disabled':''}></label>
+  <label class="cursor-pointer p-2 ${offV?'dis':''}" style="color:var(--brand)" title="${tr('Add a video')}"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2" ry="2"/></svg><input type="file" accept="video/*" data-ef="video" class="hidden" ${offV?'disabled':''}></label></div>`;
+  return `<textarea id="et" rows="5" class="w-full resize-y rounded-xl border bl p-2">${esc(ed.text)}</textarea>
+  ${att}
+  ${linkCard(ed.link,'edit')}
+  <div class="mt-2 flex flex-wrap gap-1.5">${Object.entries(MOODS).map(([k,m])=>{const on=ed.mood===k;return `<button class="pill ${on?'on':''}" data-em="${k}" style="${on?bs(ed.mc||m[1]):''}">${mi(k,18)} ${esc(m[2])}</button>`}).join('')}</div>
+  <div class="mt-2 flex flex-wrap gap-3">${ed.mood&&MOODS[ed.mood]?col('mc',tr('Mood badge'),ed.mc||MOODS[ed.mood][1]):''}</div>
+  <div class="mt-3 flex gap-2"><button class="btn pri" data-save="${p.id}">${tr('Save')}</button><button class="btn gh" data-cancel>${tr('Cancel')}</button></div>`;
+}
+const PLAYB='<span class="pointer-events-none absolute inset-0 flex items-center justify-center"><span class="flex h-10 w-10 items-center justify-center rounded-full bg-black/55 text-white"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5Z"/></svg></span></span>';
+/* Timeline/feed media layout, driven by the number of photos+videos on the post */
+function feedMedia(items){
+  const n=items.length;if(!n)return '';
+  if(n===1){
+    const m=items[0],u=url(m.blob),lim='display:block;max-width:100%;max-height:80vh;width:auto;height:auto';
+    return m.type==='image'
+      ?`<div class="mt-2"><div class="inline-block max-w-full overflow-hidden rounded-xl border bl"><img src="${u}" data-zoom="${u}" class="cursor-zoom-in" style="${lim}"></div></div>`
+      :`<div class="mt-2"><div class="relative inline-block max-w-full cursor-pointer overflow-hidden rounded-xl border bl bg-black" data-vzoom="${u}"><video src="${u}#t=0.1" preload="metadata" muted playsinline class="pointer-events-none" style="${lim}"></video>${PLAYB}</div></div>`;
+  }
+  /* Layout by item count: 1 → original ratio (above) · 2 → 1×2 squares · 3 → 1×3 at 9:16 · 4 → 2×2 squares · 5 → 1×5 at 9:16 · 6 → 1×6 at 9:16 */
+  const cols={2:2,3:3,4:2,5:5,6:6}[n]||3,ratio=(n===2||n===4)?'1/1':'9/16',hs=n===3||n>=5;
+  /* 3 / 5 / 6 items: ONE non-wrapping row of 9:16 tiles, ~3 visible, swipe / scroll sideways for the rest */
+  return `<div class="mt-2 ${hs?'hs'+(n>3?' hs-more':''):''}" ${hs?'':`style="display:grid;gap:4px;grid-template-columns:repeat(${cols},minmax(0,1fr))"`}>${items.map(m=>{const u=url(m.blob);
+    return `<div class="relative overflow-hidden rounded-xl border bl bg-black ${hs?'hst':''}" style="aspect-ratio:${ratio}">${m.type==='image'
+      ?`<img src="${u}" data-zoom="${u}" class="h-full w-full cursor-zoom-in object-cover" style="display:block;width:100%;height:100%;object-fit:cover">`
+      :`<div class="h-full w-full cursor-pointer" style="width:100%;height:100%" data-vzoom="${u}"><video src="${u}#t=0.1" preload="metadata" muted playsinline class="pointer-events-none h-full w-full object-cover" style="display:block;width:100%;height:100%;object-fit:cover"></video>${PLAYB}</div>`}</div>`}).join('')}</div>`;
+}
+function card(p,up=false,dn=false,full=false){
+  const imgs=p.media.filter(x=>x.type==='image'),vids=p.media.filter(x=>x.type==='video'),aud=p.media.filter(x=>x.type==='audio');
+  const wrap=inner=>`<article ${full||editing===p.id?'':`data-open="${p.id}"`} class="${dn?'':'border-b bl'} p-4" ${full?'style="background:rgba(var(--brand-rgb),.05)"':''}><div class="flex gap-3"><div class="tcol ${up?'up':''} ${dn?'dn':''} flex shrink-0 flex-col items-center">${avatarHtml()}</div><div class="min-w-0 flex-1">${inner}</div></div></article>`;
+  if(editing===p.id&&ed)return wrap(editBox(p));
+  const lg=!full&&isLong(p.text),op=exp.has(p.id);
+  return wrap(`<div class="flex items-start justify-between gap-2"><div class="min-w-0"><b>${esc(prof.name)}</b> <span class="mute text-sm">· ${fmt(p.ts)}</span></div>
+  <div class="flex shrink-0 items-center gap-1">${menuHtml(p)}</div></div>
+  ${MOODS[p.mood]?`<div class="mt-1">${moodBadge(p,14)}</div>`:''}
+  ${p.text?`<p class="mt-1 whitespace-pre-wrap break-words ${full?'text-lg':''} ${lg&&!op?'line-clamp-6':''}">${rich(p.text)}</p>${lg?`<button class="lnk" data-more="${p.id}">${tr(op?'Show less':'Read more…')}</button>`:''}`:''}
+  ${linkCard(p.link)}
+  ${feedMedia(p.media.filter(x=>x.type==='image'||x.type==='video'))}
+  ${aud.map(x=>`<div class="mt-2 rounded-xl border bl p-2">${mediaTag(x)}</div>`).join('')}
+  <div class="pbar mt-2 flex items-center"><button type="button" class="pact" data-addthread="${p.id}" aria-label="${tr('Add another post to this thread')}" title="${tr('Add another post')}"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg></button></div>`);
+}
+async function removePost(id){await delPost(id);posts=posts.filter(x=>x.id!==id)}
+const FEED_THREAD_MAX=3;
+function list(el,arr,empty,asc,lim){
+  const grp=g=>{
+    if(!lim||g.length<=lim)return g.map((p,i)=>card(p,i>0,i<g.length-1)).join('');
+    /* All feed: show only the first `lim` posts of a long thread, then a link to the full thread (hidden posts are untouched) */
+    return g.slice(0,lim).map((p,i)=>card(p,i>0,true)).join('')+`<div class="border-b bl px-4 pb-3" style="padding-left:4.25rem"><button type="button" class="lnk" data-view="${g[0].id}">${tr('View full post')}</button></div>`;
+  };
+  el.innerHTML=arr.length?groupThreads(arr,asc).map(grp).join(''):`<p class="mute p-10 text-center">${empty}</p>`;
+  el.onclick=postClick;
+}
+(()=>{let g=null,moved=false;
+  document.addEventListener('pointerdown',e=>{const s=e.pointerType==='mouse'&&e.button===0&&e.target.closest&&e.target.closest('.hs');g=s&&s.scrollWidth>s.clientWidth?{s,x:e.clientX,l:s.scrollLeft}:null;moved=false});
+  document.addEventListener('pointermove',e=>{if(!g)return;const d=e.clientX-g.x;if(!moved&&Math.abs(d)>5){moved=true;g.s.classList.add('hs-drag')}if(moved)g.s.scrollLeft=g.l-d});
+  document.addEventListener('dragstart',e=>{if(e.target.closest&&e.target.closest('.hs'))e.preventDefault()});
+  const stop=()=>{if(g){g.s.classList.remove('hs-drag')}g=null};
+  document.addEventListener('pointerup',stop);document.addEventListener('pointercancel',stop);
+  document.addEventListener('click',e=>{if(moved){moved=false;e.stopPropagation();e.preventDefault()}},true);
+})();
+const postClick=async e=>{
+    const z=e.target.closest('[data-zoom]');if(z)return openOv(`<img src="${z.dataset.zoom}" class="max-h-[92vh] max-w-[96vw] object-contain" style="width:auto;height:auto">`);
+    const vz=e.target.closest('[data-vzoom]');if(vz)return openOv(`<button type="button" data-pg="close" aria-label="${tr('Close')}" class="absolute right-3 z-10 rounded-full bg-black/60 px-3 py-1 text-2xl text-white" style="top:calc(env(safe-area-inset-top,0px) + 12px)">×</button><video src="${vz.dataset.vzoom.split('#')[0]}" controls autoplay playsinline class="max-h-[92vh] max-w-[96vw] bg-black object-contain" style="width:auto;height:auto"></video>`);
+    const b=e.target.closest('button');
+    if(!b){const a=e.target.closest('[data-open]');if(a&&!e.target.closest('a,input,textarea,select,label,video,audio,.pmenu')&&!String(getSelection()).length)openPost(a.dataset.open);return}
+    const d=b.dataset;
+    if(d.del){
+      const p=posts.find(x=>x.id===d.del);if(!p)return;const th=threadOf(p);
+      const ok=await askConfirm({title:tr('Delete this post?'),body:tr('This will permanently delete this post.')+(th.length>1?' '+tr('The other posts in the thread will stay.'):''),ok:tr('Delete')});
+      if(!ok)return;
+      const i=th.findIndex(x=>x.id===p.id),nxt=th[i-1]||th[i+1];
+      await removePost(p.id);if(editing===p.id){editing=null;ed=null}
+      if(pview===p.id){try{history.replaceState(history.state,'',nxt?'#post/'+encodeURIComponent(nxt.id):location.pathname+location.search)}catch(err){}route()}
+      renderAll()}
+    else if(d.edit){const p=posts.find(x=>x.id===d.edit);editing=d.edit;ed={link:p.link||null,text:p.text,mood:p.mood||'',mc:p.mc||'',media:[...p.media],err:''};renderAll()}
+    else if('cancel' in d){editing=null;ed=null;renderAll()}
+    else if(d.em!==undefined){ed.mood=ed.mood===d.em?'':d.em;ed.mc='';renderAll()}
+    else if(d.ecr){ed[d.ecr]='';renderAll()}
+    else if(d.erm!==undefined){ed.media.splice(+d.erm,1);ed.err='';renderAll()}
+    else if(d.save){const p=posts.find(x=>x.id===d.save),txt=(b.closest('article').querySelector('textarea')||$('#et')).value.trim();
+      if(!txt&&!ed.media.length)return alert(tr('An entry needs some text or media.'));
+      Object.assign(p,{link:ed.link||null,text:txt,media:ed.media,mood:ed.mood,mc:ed.mc});delete p.tags;delete p.tc;
+      await putPost(p);editing=null;ed=null;renderAll()}
+    else if(d.more){exp.has(d.more)?exp.delete(d.more):exp.add(d.more);renderAll()}
+  };
+function renderFeed(){list($('#feed'),posts,tr('No entries yet. Write your first one above ✍️'),false,FEED_THREAD_MAX);icons()}
+
+/* ---------- Calendar (2x2 mood grid) ---------- */
+function renderCal(){
+  const y=calM.getFullYear(),mo=calM.getMonth(),first=new Date(y,mo,1).getDay(),n=new Date(y,mo+1,0).getDate(),by={};
+  posts.forEach(p=>{(by[dayKey(p.ts)]=by[dayKey(p.ts)]||[]).push(p)});
+  let cells='';for(let i=0;i<first;i++)cells+='<div></div>';
+  for(let d=1;d<=n;d++){
+    const k=y+'-'+String(mo+1).padStart(2,'0')+'-'+String(d).padStart(2,'0'),ps=by[k]||[],cnt={},last={};
+    ps.forEach(p=>{if(p.mood){cnt[p.mood]=(cnt[p.mood]||0)+1;last[p.mood]=Math.max(last[p.mood]||0,p.ts)}});
+    const top=Object.keys(cnt).sort((a,b)=>cnt[b]-cnt[a]||last[b]-last[a]).slice(0,4);
+    const body=top.length===1?`<div class="flex h-full items-center justify-center pt-2">${mi(top[0],30)}</div>`:top.length?`<div class="grid h-full grid-cols-2 grid-rows-2 place-items-center p-1 pt-3">${[0,1,2,3].map(i=>`<div class="flex items-center justify-center">${top[i]?mi(top[i],16):''}</div>`).join('')}</div>`:'';
+    cells+=`<button data-day="${k}" class="relative aspect-square overflow-hidden rounded-xl border bl ${fDay===k?'ring-2':''}" style="${top.length?`background:${MOODS[top[0]][1]}22;`:''}--tw-ring-color:var(--brand)"><span class="mute absolute left-1 top-0.5 text-[10px]">${d}</span>${body}${ps.length&&!top.length?'<span class="absolute bottom-1 left-1/2 h-1.5 w-1.5 rounded-full" style="background:var(--brand)"></span>':''}</button>`;
+  }
+  $('#cal').innerHTML=`<div class="mb-3 flex items-center justify-between"><button class="btn gh" data-mv="-1">‹</button><b class="text-lg">${fmtDate(calM,{month:'long',year:'numeric'})}</b><button class="btn gh" data-mv="1">›</button></div>
+  <div class="mute mb-1 grid grid-cols-7 gap-1 text-center text-xs">${weekInitials().map(x=>`<div>${x}</div>`).join('')}</div>
+  <div class="grid grid-cols-7 gap-1">${cells}</div>
+  <p class="mute mt-3 text-xs">${tr('Each day shows up to 4 most-logged moods (most frequent first).')}</p>`;
+  $('#cal').onclick=e=>{const b=e.target.closest('button');if(!b)return;
+    if(b.dataset.mv){calM=new Date(y,mo+ +b.dataset.mv,1);renderCal()}
+    else if(b.dataset.day){fDay=fDay===b.dataset.day?'':b.dataset.day;renderCal()}};
+  renderDay();
+}
+function renderDay(){
+  const el=$('#dayEntries');
+  if(!fDay){el.innerHTML='<p class="mute border-t bl p-6 text-center text-sm">'+tr('Tap a date to see that day’s entries.')+'</p>';return}
+  el.innerHTML=`<div class="border-t bl px-4 py-2 text-sm font-semibold">${fmtDate(new Date(fDay+'T00:00'),{weekday:'long',month:'long',day:'numeric'})}</div><div id="dl"></div>`;
+  list($('#dl'),posts.filter(p=>dayKey(p.ts)===fDay).sort((a,b)=>a.ts-b.ts),tr('No entries on this day.'),true,FEED_THREAD_MAX);icons();
+}
+
+/* ---------- Wallpaper: upload, live preview on the real page, Done to save ----------
+   Saved in IndexedDB meta 'wallpaper' = {blob,zoom,opacity}. In Preview Mode the sidebar is tucked away (staged
+   settings are kept), the wallpaper shows behind the real Timeline / Create Post / Calendar, and the controls
+   (zoom −/+, opacity) repaint it instantly. Done asks for confirmation, then saves. */
+const WP_MIN=.5,WP_MAX=3,WP_STEP=.1,WP_DEF_OP=.6,WP_MAX_BYTES=15*1024*1024;
+let WP=null,wpDraft=null,wpPrev=false;
+const wpNum=(v,a,b,d)=>{v=+v;return Number.isFinite(v)?Math.min(b,Math.max(a,v)):d};
+const wpClamp=(v,a,b)=>Math.min(b,Math.max(a,v));
+/* Size = "cover" the screen, times zoom. x / y are the dragged offset as a fraction of the screen, so the same
+   position is kept on any screen size. The offset is limited so the picture can't be dragged away from the screen. */
+function wpGeom(w,el=$('#wp')){
+  const img=el.firstElementChild,nw=img.naturalWidth,nh=img.naturalHeight,vw=el.clientWidth,vh=el.clientHeight;
+  if(!nw||!nh||!vw||!vh)return null;
+  const k=Math.max(vw/nw,vh/nh),cw=nw*k,ch=nh*k;
+  /* free movement on BOTH axes: the picture may travel until only a quarter of the screen is still covered by it */
+  const mx=cw*w.zoom/2+vw*.25,my=ch*w.zoom/2+vh*.25;
+  return{cw,ch,mx,my,vw,vh,x:wpClamp(w.x*vw,-mx,mx),y:wpClamp(w.y*vh,-my,my)};
+}
+function wpPaint(){
+  const w=wpPrev?wpDraft:WP;
+  document.body.classList.toggle('wp-on',!!w);
+  document.querySelectorAll('.wpl').forEach(el=>{
+    const img=el.firstElementChild;if(!img)return;
+    if(!img.onload)img.onload=()=>wpPaint();
+    if(!w){img.removeAttribute('src');img._b=null;return}
+    if(img._b!==w.blob){img._b=w.blob;img.src=url(w.blob)}
+    el.style.setProperty('--wo',w.opacity);
+    const g=wpGeom(w,el);
+    if(g){img.style.width=g.cw+'px';img.style.height=g.ch+'px';img.style.transform=`translate(-50%,-50%) translate(${g.x}px,${g.y}px) scale(${w.zoom})`}
+  });
+  if(w&&wpPrev){
+    $('#wpzv').textContent=Math.round(w.zoom*100)+'%';$('#wpov').textContent=Math.round(w.opacity*100)+'%';
+    const r=$('#wpop');if(+r.value!==Math.round(w.opacity*100))r.value=Math.round(w.opacity*100);
+    document.querySelector('[data-act=wpzo]').disabled=w.zoom<=WP_MIN+1e-6;document.querySelector('[data-act=wpzi]').disabled=w.zoom>=WP_MAX-1e-6;
+  }
+}
+addEventListener('resize',wpPaint);addEventListener('pageshow',()=>wpPaint());document.addEventListener('visibilitychange',()=>{if(!document.hidden)wpPaint()});
+/* ---- drag to reposition (mouse + touch), Preview Mode only ---- */
+let wpDrag=null,wpNoClick=0;
+const WP_NODRAG='#wpbar,#wpdone,#bnav,button,a,input,textarea,select,label,video,audio,[contenteditable],[data-act]';
+document.addEventListener('pointerdown',e=>{
+  if(!wpPrev||wpDrag||!e.isPrimary||(e.pointerType==='mouse'&&e.button!==0))return;
+  if(e.target.closest&&e.target.closest(WP_NODRAG))return;
+  const g=wpGeom(wpDraft);if(!g)return;
+  wpDrag={id:e.pointerId,sx:e.clientX,sy:e.clientY,ox:g.x,oy:g.y,moved:false};
+});
+document.addEventListener('pointermove',e=>{
+  if(!wpDrag||e.pointerId!==wpDrag.id||!wpPrev)return;
+  const dx=e.clientX-wpDrag.sx,dy=e.clientY-wpDrag.sy;
+  if(!wpDrag.moved){if(Math.hypot(dx,dy)<5)return;wpDrag.moved=true;document.body.classList.add('wp-drag')}
+  const g=wpGeom(wpDraft);if(!g)return;
+  wpDraft.x=wpClamp(wpDrag.ox+dx,-g.mx,g.mx)/g.vw;wpDraft.y=wpClamp(wpDrag.oy+dy,-g.my,g.my)/g.vh;
+  wpPaint();e.preventDefault();
+});
+const wpEndDrag=e=>{
+  if(!wpDrag||e.pointerId!==wpDrag.id)return;
+  if(wpDrag.moved)wpNoClick=performance.now()+400;   /* a drag must not also "click" a post underneath */
+  wpDrag=null;document.body.classList.remove('wp-drag');
+};
+document.addEventListener('pointerup',wpEndDrag);document.addEventListener('pointercancel',wpEndDrag);
+document.addEventListener('click',e=>{if(performance.now()<wpNoClick){e.stopPropagation();e.preventDefault();wpNoClick=0}},true);
+document.addEventListener('selectstart',e=>{if(wpDrag&&wpDrag.moved)e.preventDefault()});
+document.addEventListener('dragstart',e=>{if(wpDrag)e.preventDefault()});
+$('#wp img').onerror=()=>{if(!(wpPrev?wpDraft:WP))return;alert(tr('That image could not be opened.'));if(wpPrev)wpExit();else{WP=null;wpPaint()}};
+function wpEnter(blob,zoom,opacity,x,y){
+  wpDraft={blob,zoom:wpNum(zoom,WP_MIN,WP_MAX,1),opacity:wpNum(opacity,0,1,WP_DEF_OP),x:wpNum(x,-6,6,0),y:wpNum(y,-6,6,0)};wpPrev=true;
+  document.body.classList.add('wp-prev');
+  clearTimeout(pcT);   /* tuck the sidebar away WITHOUT closeSettings(): staged settings (st) must survive */
+  $('#spanel').classList.remove('open');$('#ptop').classList.remove('open','sopen');$('#spback').classList.remove('open');$('#pbtn').setAttribute('aria-expanded','false');
+  if(document.activeElement&&document.activeElement.blur)document.activeElement.blur();
+  wpPaint();
+}
+function wpExit(){
+  wpPrev=false;wpDraft=null;document.body.classList.remove('wp-prev');wpPaint();
+  if(!st)st={theme,mi:{...MI},orig:theme};
+  renderSettings();   /* back to Customization → Wallpaper, where the person started */
+  $('#ptop').classList.add('open','sopen');$('#spanel').classList.add('open');$('#spback').classList.add('open');
+  $('#pbtn').setAttribute('aria-expanded','true');$('#spanel').focus({preventScroll:true});
+}
+function wpZoom(d){if(!wpPrev)return;wpDraft.zoom=wpNum(Math.round((wpDraft.zoom+d)*100)/100,WP_MIN,WP_MAX,1);wpPaint()}
+async function wpDone(){
+  if(!wpPrev)return;
+  const ok=await askConfirm({title:tr('Apply this wallpaper?'),body:tr('It will be saved and shown behind the Timeline, Create Post and Calendar.'),ok:tr('Done'),danger:false});
+  if(!ok||!wpPrev)return;
+  const v={blob:wpDraft.blob,zoom:wpDraft.zoom,opacity:wpDraft.opacity,x:wpDraft.x,y:wpDraft.y};
+  try{await setMeta('wallpaper',v)}catch(e){console.error(e);alert(tr('Could not save the wallpaper.'));return}
+  WP=v;wpExit();
+}
+async function wpRemove(){
+  const ok=await askConfirm({title:tr('Remove this wallpaper?'),body:tr('The Timeline, Create Post and Calendar will go back to their plain background.'),ok:tr('Remove')});
+  if(!ok)return;
+  try{await setMeta('wallpaper',null)}catch(e){console.error(e)}
+  WP=null;wpPaint();if(panelOpen())renderSettings();
+}
+/* ---------- Settings (staged until Save) ---------- */
+const panelOpen=()=>$('#spanel').classList.contains('open');
+let pcT;
+function openSettings(){
+  st={theme,mi:{...MI},orig:theme};
+  const was=panelOpen();renderSettings();
+  if(was)return;
+  clearTimeout(pcT);
+  $('#ptop').classList.add('open','sopen');$('#spanel').classList.add('open');$('#spback').classList.add('open');
+  $('#pbtn').setAttribute('aria-expanded','true');$('#spanel').focus({preventScroll:true});
+}
+function closeSettings(revert){
+  if(revert&&st)setTheme(st.orig);st=null;
+  const p=$('#spanel'),had=p.contains(document.activeElement);
+  p.classList.remove('open');$('#ptop').classList.remove('sopen');$('#spback').classList.remove('open');
+  $('#pbtn').setAttribute('aria-expanded','false');
+  clearTimeout(pcT);pcT=setTimeout(()=>$('#ptop').classList.remove('open'),320);
+  if(had)$('#pbtn').focus();
+}
+/* ---------- Mood icon upload rules: PNG/JPG/JPEG/GIF, max 512x512 px (any shape is shown whole inside a square) ---------- */
+const MI_MAX=512;
+const imgSize=f=>new Promise((ok,no)=>{const u=URL.createObjectURL(f),im=new Image();im.onload=()=>{URL.revokeObjectURL(u);ok([im.naturalWidth,im.naturalHeight])};im.onerror=()=>{URL.revokeObjectURL(u);no()};im.src=u});
+async function checkMoodImg(f){
+  const okT=['image/png','image/jpeg','image/gif'].includes(f.type)||(!f.type&&/\.(png|jpe?g|gif)$/i.test(f.name));
+  if(!okT)return tr('Use a PNG, JPG, JPEG or GIF image.');
+  try{const[w,h]=await imgSize(f);if(w>MI_MAX||h>MI_MAX)return tr('Image is {w}×{h}px. Maximum is {max}×{max}px.',{w,h,max:MI_MAX})}catch(e){return tr('Could not read this image.')}
+  return '';
+}
+/* Reset a mood to the system defaults: original icon, original name and original badge colour. Saved immediately. */
+async function resetMood(k){
+  if(!MOODS[k])return;let err='';const def=tr(MOOD_DEF[k]);
+  if(st)st.mi[k]=null;delete MI[k];delete MCOL[k];
+  if(mEdit===k)mEdit=null;
+  if(Object.entries(MOODS).some(([x,m])=>x!==k&&m[2].toLowerCase()===def.toLowerCase()))err=tr('The default name “{n}” is used by another mood. Rename that mood first.',{n:def});
+  else{delete MN[k];MOODS[k][2]=def}
+  try{await setMeta('mi',MI);await setMeta('mn',MN);await setMeta('mcol',MCOL)}catch(e){console.error(e)}
+  if(draft.mood===k)draft.mc='';
+  renderAll();drawBadges();renderSettings();if(err)$('#mierr').textContent=err;
+}
+/* ---------- Mood names (renamed names persist in meta 'mn') ---------- */
+const MOOD_DEF=Object.fromEntries(Object.entries(MOODS).map(([k,m])=>[k,m[2]]));   /* default (English) mood names */
+const applyMoodNames=()=>{for(const k in MOODS)MOODS[k][2]=MN[k]||tr(MOOD_DEF[k])};   /* renamed moods keep the user's own name; default names follow the language */
+async function commitMood(v){
+  const k=mEdit;mEdit=null;v=String(v||'').replace(/\s+/g,' ').trim().slice(0,20);let err='';
+  if(k&&v&&v!==MOODS[k][2]){
+    if(Object.entries(MOODS).some(([x,m])=>x!==k&&m[2].toLowerCase()===v.toLowerCase()))err=tr('Another mood already uses that name.');
+    else{MOODS[k][2]=v;MN[k]=v;await setMeta('mn',MN);renderAll();drawBadges()}
+  }
+  renderSettings();if(err)$('#mierr').textContent=err;
+}
+/* ---------- ONE shared Profile Icon ----------
+   Single source of truth: prof.avatar (persisted in IndexedDB meta 'profile').
+   Single component:       profImgHtml() renders it; every element marked [data-profile-icon]
+                           (top-left #pbtn and the Settings header .sav) is filled by refreshProfileIcons().
+   Single upload/reset:    setProfileIcon(file|null) – the only place that changes, saves and re-renders it. */
+const profImg=()=>prof.avatar;
+const profImgHtml=()=>{const a=profImg();return a?`<img src="${url(a)}" alt="">`:'<i data-lucide="user"></i>'};
+function refreshProfileIcons(){const h=profImgHtml();document.querySelectorAll('[data-profile-icon]').forEach(el=>{el.innerHTML=h});document.querySelectorAll('[data-profile-name]').forEach(el=>{el.textContent=dName()||tr('Me')});icons()}
+async function setProfileIcon(f){
+  prof.avatar=f||null;if(pf)pf.avatar=prof.avatar;
+  renderAll();                                   /* updates every location immediately */
+  try{await setMeta('profile',prof)}catch(e){console.error(e)}   /* persists across refresh */
+}
+const syncProfileImages=refreshProfileIcons;
+function renderProfileBtn(){refreshProfileIcons()}
+/* ---------- Customization: one collapsible group (Accent color, Mood icons, Wallpaper) ---------- */
+let custOpen=true;try{custOpen=localStorage.getItem('its-me-cust')!=='0'}catch(e){}
+const CHEV_DOWN='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>';
+const CHEV_UP='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m18 15-6-6-6 6"/></svg>';
+const custHead=()=>`<h3 class="mb-2 border-t bl pt-3 text-sm font-semibold"><button type="button" class="flex w-full items-center justify-between gap-2 text-left font-semibold" data-act="custtgl" aria-expanded="${custOpen}" aria-controls="custbody"><span>${tr('Customization')}</span><span data-custico class="mute">${custOpen?CHEV_DOWN:CHEV_UP}</span></button></h3>`;
+function toggleCust(){
+  custOpen=!custOpen;try{localStorage.setItem('its-me-cust',custOpen?'1':'0')}catch(e){}
+  const b=$('#custbody'),t=document.querySelector('[data-act=custtgl]');if(b)b.hidden=!custOpen;
+  if(t){t.setAttribute('aria-expanded',String(custOpen));t.querySelector('[data-custico]').innerHTML=custOpen?CHEV_DOWN:CHEV_UP}
+}
+function renderSettings(){
+  const sb=$('#spanel'),sc=sb.scrollTop;
+  $('#spbody').innerHTML=(`<h3 class="mb-1 text-sm font-semibold">${tr('Language')}</h3>
+  <div class="mb-4 flex items-center gap-3"><button type="button" class="tgl lang" role="switch" data-act="langtgl" aria-checked="${LANG==='th'}" aria-label="Language / ภาษา" title="${tr('Switch between Thai and English')}"><span class="tx l">EN</span><span class="tx r">ไทย</span><span class="th"><span class="s">EN</span><span class="m">ไทย</span></span></button><span class="mute text-sm" data-lngl>${LANG==='th'?'ภาษาไทย':'English'}</span></div>
+  <h3 class="mb-1 text-sm font-semibold">${tr('Theme')}</h3>
+  <div class="mb-4 flex items-center gap-3"><button type="button" class="tgl" role="switch" data-act="themetgl" aria-checked="${st.theme==='dark'}" aria-label="${tr('Dark mode')}" title="${tr('Switch light / dark theme')}"><span class="tk l"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg></span><span class="tk r"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></span><span class="th"><span class="s"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg></span><span class="m"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></span></span></button><span class="mute text-sm" data-thl>${tr(st.theme==='dark'?'Dark mode':'Light mode')}</span></div>
+  ${custHead()}<div id="custbody" class="mb-4" ${custOpen?'':'hidden'}>
+  <h3 class="mb-1 text-sm font-semibold">${tr('Accent color')}</h3>
+  <div class="mb-4 flex items-center gap-2"><input type="color" data-acc value="${ACC}" aria-label="${tr('Accent color')}" class="h-8 w-8 cursor-pointer rounded border-0 bg-transparent p-0"><span class="mute flex-1 text-xs" data-acch>${ACC.toUpperCase()}</span><button class="btn gh" data-act="accreset">${tr('Reset')}</button></div>
+  <h3 class="mb-1 text-sm font-semibold">${tr('Mood icons')}</h3>
+  <p id="mierr" class="mb-1 text-xs text-red-500" role="alert"></p>
+  ${Object.entries(MOODS).map(([k,m])=>`<div class="flex items-center gap-2 py-1">${mi(k,30,st.mi)}${mEdit===k?`<input data-mn="${k}" value="${esc(m[2])}" maxlength="20" aria-label="${tr('Mood name')}" class="min-w-0 flex-1 rounded-lg border bl px-2 py-1 text-sm">`:`<span class="min-w-0 flex-1 truncate select-none" data-mname="${k}" title="${tr('Double-click to rename')}">${esc(m[2])}</span>`}<label class="btn gh cursor-pointer">${tr('Upload')}<input type="file" accept="image/png,image/jpeg,image/gif,.png,.jpg,.jpeg,.gif" data-mi="${k}" class="hidden"></label><button class="btn gh" data-act="mireset" data-k="${k}">${tr('Reset')}</button></div>`).join('')}
+  <h3 class="mb-1 mt-4 text-sm font-semibold">${tr('Wallpaper')}</h3>
+  <p class="mute mb-2 text-xs">${tr('Shown behind the Timeline, Create Post and Calendar only.')}</p>
+  <div class="flex flex-wrap items-center gap-2">${WP?`<img src="${url(WP.blob)}" alt="" class="h-10 w-10 rounded-lg border bl object-cover">`:''}<label class="btn gh cursor-pointer">${tr('Upload Wallpaper')}<input type="file" accept="image/png,image/jpeg,image/webp,image/gif,.png,.jpg,.jpeg,.webp,.gif" data-wpf class="hidden"></label>${WP?`<button class="btn gh" data-act="wpadj">${tr('Adjust')}</button><button class="btn gh" data-act="wpremove">${tr('Remove')}</button>`:''}</div>
+  </div>
+  <h3 class="mb-1 mt-4 text-sm font-semibold">${esc(tr('Backup & restore'))}</h3>
+  <p class="mute mb-2 text-xs">${tr('It’s me has no accounts. Your diary is stored only in this browser, so back it up regularly. A backup holds all posts, threads, photos, videos, voice notes, highlights, drafts, your profile and settings.')}</p>
+  <div class="grid gap-2"><label class="btn gh cursor-pointer justify-center">${tr('Import Backup')}<input type="file" accept=".json,application/json" data-imp class="hidden"></label><button class="btn pri justify-center" data-act="exportjson">${tr('Back Up Data')}</button><button class="btn gh justify-center" data-act="exportpdf">${tr('Export diary to PDF')}</button></div>
+  <div id="bkmsg" class="hidden" role="status" aria-live="polite"></div>
+  <div class="mt-5 flex gap-2"><button class="btn pri flex-1 justify-center" data-act="savest">${tr('Save')}</button><button class="btn gh flex-1 justify-center" data-act="cancelst">${tr('Cancel')}</button></div>
+  <p id="msg" class="mute mt-2 text-center text-sm"></p>`);
+  sb.scrollTop=sc;syncProfileImages();paintBk();
+  if(mEdit){const x=sb.querySelector('[data-mn]');if(x){x.focus();x.select();
+    x.onkeydown=ev=>{if(ev.key==='Enter'){ev.preventDefault();commitMood(x.value)}else if(ev.key==='Escape'){ev.stopPropagation();mEdit=null;renderSettings()}};
+    x.onblur=()=>{if(mEdit)commitMood(x.value)}}}
+}
+const b2d=b=>new Promise(r=>{const f=new FileReader();f.onload=()=>r(f.result);f.readAsDataURL(b)});
+const d2b=async d=>d?(await fetch(d)).blob():null;
+/* ---------- Backup & Import (replaces accounts: no sign-in, your data stays on this device) ---------- */
+const BK_VER=5;class BkErr extends Error{constructor(fn){super('backup');this.fn=fn}}   /* messages are functions, so they are re-translated if the language changes */
+let bkNote=null,bkWorking=false;
+const paintBk=()=>{const el=$('#bkmsg');if(!el)return;if(!bkNote){el.className='hidden';el.textContent='';return}el.className='bk-msg '+(bkNote.ok?'bk-ok':'bk-err');el.textContent=bkNote.fn()};
+const bkSay=(ok,x)=>{bkNote={ok,fn:typeof x==='function'?x:()=>x};paintBk()};
+const bkBtns=on=>document.querySelectorAll('[data-act="exportjson"],input[data-imp]').forEach(x=>{x.disabled=on;(x.closest('label')||x).classList.toggle('dis',on)});
+const putMany=async arr=>{const d=await dbp;return new Promise((res,rej)=>{const t=d.transaction('posts','readwrite'),s=t.objectStore('posts');arr.forEach(p=>s.put(p));t.oncomplete=()=>res();t.onerror=t.onabort=()=>rej(t.error)})};
+async function exportJson(){
+  if(bkWorking)return;bkWorking=true;bkBtns(true);bkSay(true,()=>tr('Preparing your backup… this can take a moment if you have many photos or videos.'));
+  try{
+    const s=b=>b?b2d(b):null,mm=ms=>Promise.all((ms||[]).filter(m=>m&&m.blob).map(async m=>({type:m.type,data:await b2d(m.blob)})));
+    let media=0;const mis={};for(const k in MI)mis[k]=await s(MI[k]);
+    const head=JSON.stringify({app:'its-me',v:BK_VER,created:Date.now(),theme,accent:ACC,mn:MN,mcol:MCOL,mi:mis,profile:{...prof,avatar:await s(prof.avatar),banner:await s(prof.banner)},wallpaper:WP?{data:await s(WP.blob),zoom:WP.zoom,opacity:WP.opacity,x:WP.x,y:WP.y}:null});
+    const parts=[head.slice(0,-1),',"hl":['];   /* written piece by piece so large libraries don't need one giant string */
+    for(let i=0;i<hl.length;i++){const h=hl[i];parts.push((i?',':'')+JSON.stringify({...h,cover:await s(h.cover),items:await Promise.all((h.items||[]).map(s))}))}
+    parts.push('],"drafts":[');
+    for(let i=0;i<drafts.length;i++){const d=drafts[i],m=await mm(d.media);media+=m.length;parts.push((i?',':'')+JSON.stringify({...d,media:m,extras:await Promise.all((d.extras||[]).map(async x=>({text:x.text,media:await mm(x.media)})))}))}
+    parts.push('],"posts":[');
+    const ord=[...posts].sort((a,b)=>a.ts-b.ts);
+    for(let i=0;i<ord.length;i++){const p=ord[i],m=await mm(p.media);media+=m.length;parts.push((i?',':'')+JSON.stringify({...p,media:m}))}
+    parts.push(']}');
+    const blob=new Blob(parts,{type:'application/json'}),t=new Date(),pad=n=>String(n).padStart(2,'0'),name=`its-me-backup-${dayKey(t)}-${pad(t.getHours())}${pad(t.getMinutes())}.json`;
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.style.display='none';document.body.appendChild(a);a.click();
+    setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},60000);
+    {const np=posts.length,sz=fmtSize(blob.size);bkSay(true,()=>tr('Backup created: {name} ({posts} {pw}, {media} {mw}, {size}). Your browser is downloading it — check your Downloads folder and keep the file somewhere safe.',{name,posts:np,pw:tr(np===1?'post':'posts'),media,mw:tr(media===1?'media file':'media files'),size:sz}))}
+  }catch(e){console.error(e);bkSay(false,()=>tr('Backup failed: something went wrong while preparing the file (the device may be low on memory). Close other tabs and try again. Your data in It’s me was not changed.'))}
+  finally{bkWorking=false;bkBtns(false)}
+}
+async function importJson(f){
+  if(bkWorking)return;bkWorking=true;bkBtns(true);bkSay(true,()=>tr('Reading {name}…',{name:f.name}));
+  try{
+    let d;try{d=JSON.parse(await f.text())}catch(e){throw new BkErr(()=>tr('That file could not be read as a It’s me backup (it is not valid JSON, or it is damaged). Nothing was changed.'))}
+    if(!d||(d.app!=='its-me'&&d.app!=='nook')||!Array.isArray(d.posts))throw new BkErr(()=>tr('That is not a It’s me backup file. Choose a .json file created with “Back Up Data”. Nothing was changed.'));
+    if(d.v>BK_VER)throw new BkErr(()=>tr('That backup was made by a newer version of It’s me. Update the app, then try again. Nothing was changed.'));
+    const bad=d.posts.findIndex(p=>!p||typeof p.id!=='string'||!p.id||!Number.isFinite(+p.ts));
+    if(bad>-1)throw new BkErr(()=>tr('Post {n} in this backup is damaged (missing ID or date), so nothing was imported.',{n:bad+1}));
+    const nT=d.posts.filter(p=>p.tid).length,nP=d.posts.length;
+    const go=await askConfirm({title:tr('Import this backup?'),body:tr('It contains {n} {pw}{th}. Posts with the same ID are replaced by the backed-up version; everything else you have now is kept.',{n:nP,pw:tr(nP===1?'post':'posts'),th:nT?' ('+nT+' '+tr('in threads')+')':''}),ok:tr('Import'),danger:false});
+    if(!go){bkSay(true,()=>tr('Import cancelled. Nothing was changed.'));return}
+    bkSay(true,()=>tr('Importing… please keep this page open.'));
+    let skipped=0;   /* convert everything first, so a bad file can't leave a half-finished restore */
+    const toM=async ms=>(await Promise.all((ms||[]).map(async m=>{if(!m||!m.data||!['image','video','audio'].includes(m.type)){skipped++;return null}return{type:m.type,blob:await d2b(m.data)}}))).filter(Boolean);
+    const np=[];for(const p of d.posts)np.push(normPost({...p,ts:+p.ts,text:String(p.text||''),media:await toM(p.media)}));
+    const bd=[];for(const x of d.drafts||[]){if(!x||!x.id)continue;bd.push({...x,media:await toM(x.media),extras:await Promise.all((x.extras||[]).map(async e=>({text:e.text||'',media:await toM(e.media)})))})}
+    const bh=[];for(const h of d.hl||[]){if(!h||!h.id||!h.cover)continue;bh.push({...h,cover:await d2b(h.cover),items:(await Promise.all((h.items||[]).map(x=>x?d2b(x):null))).filter(Boolean)})}
+    const merge=(cur,add)=>{const m=new Map(cur.map(x=>[x.id,x]));add.forEach(x=>m.set(x.id,x));return[...m.values()]};
+    const P=d.profile||{},newProf={...prof,...P,name:P.name||prof.name,avatar:P.avatar?await d2b(P.avatar):prof.avatar,banner:P.banner?await d2b(P.banner):prof.banner};
+    const newMI={...MI};for(const k in d.mi||{})if(MOODS[k]&&d.mi[k])newMI[k]=await d2b(d.mi[k]);
+    const newMN={...MN};for(const k in d.mn||{})if(MOODS[k]&&d.mn[k])newMN[k]=String(d.mn[k]);
+    const newHl=merge(hl,bh),newDr=merge(drafts,bd);
+    let newWp=null;if(d.wallpaper&&d.wallpaper.data){try{const wb=await d2b(d.wallpaper.data);if(wb)newWp={blob:wb,zoom:wpNum(d.wallpaper.zoom,WP_MIN,WP_MAX,1),opacity:wpNum(d.wallpaper.opacity,0,1,WP_DEF_OP),x:wpNum(d.wallpaper.x,-6,6,0),y:wpNum(d.wallpaper.y,-6,6,0)}}catch(e){}}
+    const newMcol={...MCOL};for(const k in d.mcol||{})if(MOODS[k]&&/^#[0-9a-f]{6}$/i.test(d.mcol[k]||''))newMcol[k]=d.mcol[k];
+    await putMany(np);
+    await setMeta('profile',newProf);await setMeta('hl',newHl);await setMeta('drafts',newDr);await setMeta('mi',newMI);await setMeta('mn',newMN);await setMeta('mcol',newMcol);
+    if(newWp){await setMeta('wallpaper',newWp);WP=newWp;wpPaint()}
+    if(/^#[0-9a-f]{6}$/i.test(d.accent||'')){setAccent(d.accent,false);await setMeta('accent',ACC)}
+    if(d.theme==='dark'||d.theme==='light'){setTheme(d.theme);await setMeta('theme',d.theme);try{localStorage.setItem('its-me-theme',d.theme)}catch(e){}}
+    prof=newProf;hl=newHl;drafts=newDr;MI=newMI;MN=newMN;MCOL=newMcol;applyMoodNames();
+    posts=(await allPosts()).map(normPost).sort((a,b)=>b.ts-a.ts);
+    renderAll();drawBadges();syncBtns();
+    if(panelOpen())st={theme,mi:{...MI},orig:theme};
+    {const nh=bh.length,nd=bd.length,sk=skipped;bkSay(true,()=>tr('Import complete: {np} {pw}{th}, {nh} {hw} and {nd} {dw} restored, plus your profile and settings. Anything you had that is not in the backup was kept.',{np:nP,pw:tr(nP===1?'post':'posts'),th:nT?' '+tr('({n} in threads, order and dates kept)',{n:nT}):'',nh,hw:tr(nh===1?'highlight album':'highlight albums'),nd,dw:tr(nd===1?'draft':'drafts')})+(sk?' '+tr(sk===1?'{n} media item was empty in the file and skipped.':'{n} media items were empty in the file and skipped.',{n:sk}):''))}
+    if(panelOpen())renderSettings();
+  }catch(e){
+    if(e instanceof BkErr)bkSay(false,e.fn);
+    else{console.error(e);bkSay(false,()=>tr('Import failed: something went wrong while restoring the backup. Your existing data was not deleted. Try again, and make sure the file is a complete, unedited It’s me backup.'))}
+  }finally{bkWorking=false;bkBtns(false)}
+}
+async function exportPdf(){
+  const pa=$('#printArea');
+  pa.innerHTML=`<h1 style="font-size:20pt;font-weight:700">${esc(tr('{name} — Diary',{name:dName()}))}</h1><p style="color:#555">${esc(tr('Exported {when} · {n} entries',{when:fmt(Date.now()),n:posts.length}))}</p>`+posts.map(p=>{
+    const im=p.media.filter(m=>m.type==='image'),other=p.media.length-im.length;
+    return `<section style="break-inside:avoid;border-top:1px solid #ccc;padding:10px 0"><b>${fmt(p.ts)}</b>${MOODS[p.mood]?' · '+esc(MOODS[p.mood][2]):''}<p style="white-space:pre-wrap;margin:6px 0">${esc(p.text)}</p>${im.map(m=>`<img src="${url(m.blob)}" style="max-height:220px;max-width:46%;margin:2px;object-fit:cover">`).join('')}${other?`<div style="color:#777;font-size:10pt">${esc(tr('[{n} video/voice note not included in PDF]',{n:other}))}</div>`:''}</section>`}).join('');
+  await Promise.all([...pa.querySelectorAll('img')].map(i=>i.complete?0:new Promise(r=>{i.onload=i.onerror=r})));
+  window.print();
+}
+
+/* ---------- Profile content tabs: All / Photos / Videos (collected automatically from posts, newest first) ---------- */
+let ptab='all',pvI=0;
+const PTABS=[['all','layout-grid','All'],['photos','image','Photos'],['videos','film','Videos']];
+const mediaItems=type=>[...posts].sort((a,b)=>b.ts-a.ts).flatMap(p=>(p.media||[]).filter(m=>m.type===type).map(m=>({blob:m.blob,ts:p.ts,text:p.text||''})));
+const playSvg='<svg viewBox="0 0 24 24" width="18" height="18" fill="#fff" aria-hidden="true"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.5-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5z"/></svg>';
+function photosHtml(){
+  const it=mediaItems('image');if(!it.length)return '<p class="mute p-10 text-center">'+tr('No photos yet. Photos you add to posts appear here.')+'</p>';
+  let out='',cur='',open=false;
+  it.forEach((x,i)=>{const m=fmtDate(new Date(x.ts),{month:'long',year:'numeric'});
+    if(m!==cur){if(open)out+='</div>';cur=m;open=true;out+=`<div class="px-4 pb-1 pt-3 text-sm font-semibold">${m}</div><div class="grid grid-cols-3 gap-0.5 px-0.5">`}
+    out+=`<button type="button" class="gtile aspect-square" data-ph="${i}" aria-label="${tr('Open photo')}"><img src="${url(x.blob)}" alt="" loading="lazy"></button>`});
+  return out+'</div><div class="pb-2"></div>';
+}
+function videosHtml(){
+  const it=mediaItems('video');if(!it.length)return '<p class="mute p-10 text-center">'+tr('No videos yet. Videos you add to posts appear here.')+'</p>';
+  return `<div class="grid grid-cols-3 gap-0.5 p-0.5">${it.map((x,i)=>`<button type="button" class="gtile aspect-[9/16]" data-vo="${i}" aria-label="${tr('Play video')}"><video src="${url(x.blob)}#t=0.1" muted playsinline preload="metadata"></video><span class="absolute bottom-1.5 left-1.5 flex items-center drop-shadow">${playSvg}</span></button>`).join('')}</div>`;
+}
+function renderPTabs(){
+  $('#ptabs').innerHTML=PTABS.map(([k,i,l])=>`<button type="button" role="tab" class="ptab ${ptab===k?'on':''}" data-ptab="${k}" aria-selected="${ptab===k}"><i data-lucide="${i}" class="h-4 w-4"></i>${tr(l)}</button>`).join('');
+  $('#pall').classList.toggle('hidden',ptab!=='all');$('#pphotos').classList.toggle('hidden',ptab!=='photos');$('#pvideos').classList.toggle('hidden',ptab!=='videos');
+  $('#pphotos').innerHTML=ptab==='photos'?photosHtml():'';
+  $('#pvideos').innerHTML=ptab==='videos'?videosHtml():'';
+  icons();
+}
+function setPTab(t){
+  if(t===ptab)return;ptab=t;renderPTabs();
+  const el=$(t==='all'?'#pall':t==='photos'?'#pphotos':'#pvideos');el.classList.remove('pin');void el.offsetWidth;el.classList.add('pin');
+}
+function showPhoto(i){
+  const it=mediaItems('image');if(!it.length)return closeOv();i=Math.max(0,Math.min(i,it.length-1));pvI=i;const x=it[i];
+  openOv(`<div data-pg="bg" data-pgview class="absolute inset-0 flex items-center justify-center"><img src="${url(x.blob)}" class="max-h-[88vh] max-w-[96vw] object-contain">
+  <button data-pg="close" class="absolute right-3 top-3 px-2 text-3xl text-white" aria-label="${tr('Close')}" style="top:calc(env(safe-area-inset-top,0px) + 12px)">×</button>
+  ${i>0?'<button data-pg="prev" class="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-black/50 px-3 py-1 text-3xl text-white" aria-label="'+tr('Newer photo')+'">‹</button>':''}
+  ${i<it.length-1?'<button data-pg="next" class="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-black/50 px-3 py-1 text-3xl text-white" aria-label="'+tr('Older photo')+'">›</button>':''}
+  <div class="absolute inset-x-0 bottom-3 text-center text-sm text-white/80">${fmt(x.ts)} · ${i+1}/${it.length}</div></div>`);
+}
+const tfmt=t=>{if(!isFinite(t)||t<0)t=0;t=Math.floor(t);const h=Math.floor(t/3600),m=Math.floor(t%3600/60),sc=String(t%60).padStart(2,'0');return h?`${h}:${String(m).padStart(2,'0')}:${sc}`:`${m}:${sc}`};
+const svgPlay='<svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.5-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5z"/></svg>';
+const svgPause='<svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>';
+const svgVol='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4z" fill="currentColor"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg>';
+const svgMute='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4z" fill="currentColor"/><path d="m22 9-6 6m0-6 6 6"/></svg>';
+let reelMuted=false;
+function showReels(i){
+  const it=mediaItems('video');if(!it.length)return;
+  openOv(`<div data-pg="bg" data-rview class="absolute inset-0 flex items-center justify-center"><div class="relative" style="width:min(96vw,calc(92vh*9/16));height:min(92vh,calc(96vw*16/9))">
+  <div id="reels" class="reels h-full w-full overflow-y-scroll rounded-2xl bg-black">${it.map(x=>`<div class="reel relative h-full w-full bg-black"><video src="${url(x.blob)}" loop playsinline preload="auto" data-reel class="h-full w-full cursor-pointer object-contain"></video>
+    <div data-center class="pointer-events-none absolute inset-0 hidden items-center justify-center"><span class="flex h-16 w-16 items-center justify-center rounded-full bg-black/50 text-white">${svgPlay}</span></div>
+    <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent px-3 pb-2 pt-10 text-white">
+      <div class="pointer-events-none mb-1"><div class="text-xs opacity-80">${fmt(x.ts)}</div>${x.text?`<p class="line-clamp-2 break-words text-sm">${esc(x.text)}</p>`:''}</div>
+      <input type="range" class="rseek" min="0" max="0" step="0.01" value="0" data-seek aria-label="${tr('Seek video')}">
+      <div class="flex items-center gap-2"><button type="button" class="rbtn" data-rplay aria-label="${tr('Pause')}">${svgPause}</button><span class="text-xs tabular-nums" data-time>0:00 / 0:00</span><button type="button" class="rbtn ml-auto" data-rmute aria-label="${tr('Mute')}">${svgVol}</button></div>
+    </div></div>`).join('')}</div>
+  <button data-pg="close" class="absolute right-2 top-1 px-2 text-3xl text-white drop-shadow" aria-label="${tr('Close')}">×</button></div></div>`);
+  const box=$('#reels');
+  box.querySelectorAll('.reel').forEach(r=>wireReel(r));
+  box.scrollTop=i*box.clientHeight;
+  const io=new IntersectionObserver(es=>es.forEach(en=>{const v=en.target;if(en.isIntersecting&&en.intersectionRatio>=.6){v.currentTime=0;v.play().catch(()=>{})}else v.pause()}),{root:box,threshold:[0,.6]});
+  box.querySelectorAll('video').forEach(v=>io.observe(v));
+}
+function wireReel(r){
+  const v=r.querySelector('video'),sk=r.querySelector('[data-seek]'),tm=r.querySelector('[data-time]'),pb=r.querySelector('[data-rplay]'),mb=r.querySelector('[data-rmute]'),ct=r.querySelector('[data-center]');
+  let drag=false,was=false;
+  const dur=()=>isFinite(v.duration)?v.duration:0;
+  const paint=()=>{const d=dur(),c=Math.min(v.currentTime||0,d||v.currentTime||0);if(sk.max!=d)sk.max=d;sk.value=c;sk.style.setProperty('--p',(d?c/d*100:0)+'%');tm.textContent=tfmt(c)+' / '+tfmt(d)};
+  const state=()=>{const p=v.paused;pb.innerHTML=p?svgPlay:svgPause;pb.setAttribute('aria-label',tr(p?'Play':'Pause'));ct.classList.toggle('hidden',!p);ct.classList.toggle('flex',p)};
+  v.muted=reelMuted;mb.innerHTML=reelMuted?svgMute:svgVol;
+  v.addEventListener('loadedmetadata',()=>{
+    if(v.duration===Infinity){const back=()=>{v.removeEventListener('timeupdate',back);v.currentTime=0;paint()};v.addEventListener('timeupdate',back);v.currentTime=1e101}  /* some recorded files report no duration until seeked to the end */
+    paint()});
+  v.addEventListener('durationchange',paint);
+  v.addEventListener('timeupdate',()=>{if(!drag)paint()});
+  v.addEventListener('play',state);v.addEventListener('pause',state);v.addEventListener('seeked',()=>{if(!drag)paint()});
+  sk.addEventListener('pointerdown',()=>{drag=true;was=!v.paused;v.pause()});
+  sk.addEventListener('input',()=>{const t=+sk.value;v.currentTime=t;sk.style.setProperty('--p',(dur()?t/dur()*100:0)+'%');tm.textContent=tfmt(t)+' / '+tfmt(dur())});
+  const end=()=>{if(!drag)return;drag=false;paint();if(was)v.play().catch(()=>{})};
+  sk.addEventListener('pointerup',end);sk.addEventListener('pointercancel',end);sk.addEventListener('change',end);
+  pb.addEventListener('click',()=>v.paused?v.play().catch(()=>{}):v.pause());
+  mb.addEventListener('click',()=>{reelMuted=!reelMuted;document.querySelectorAll('#reels video').forEach(x=>x.muted=reelMuted);document.querySelectorAll('#reels [data-rmute]').forEach(x=>{x.innerHTML=reelMuted?svgMute:svgVol;x.setAttribute('aria-label',tr(reelMuted?'Unmute':'Mute'))})});
+  state();paint();
+}
+document.addEventListener('click',e=>{
+  const T=e.target.closest('[data-ptab]');if(T)return setPTab(T.dataset.ptab);
+  const P=e.target.closest('[data-ph]');if(P)return showPhoto(+P.dataset.ph);
+  const V=e.target.closest('[data-vo]');if(V)return showReels(+V.dataset.vo);
+  const rv=e.target.closest('[data-reel]');if(rv)return rv.paused?rv.play().catch(()=>{}):rv.pause();
+  const G=e.target.closest('[data-pg]');if(!G||(G.dataset.pg==='bg'&&e.target!==G))return;
+  const a=G.dataset.pg;if(a==='close'||a==='bg')closeOv();else if(a==='prev')showPhoto(pvI-1);else if(a==='next')showPhoto(pvI+1);
+});
+document.addEventListener('keydown',e=>{
+  if(document.querySelector('#ov [data-rview]')&&!(e.target.matches&&e.target.matches('input,textarea,select'))){
+    const box=$('#reels');const cur=box&&[...box.querySelectorAll('video')].find(v=>{const r=v.getBoundingClientRect(),b=box.getBoundingClientRect();return r.top>=b.top-4&&r.top<b.top+b.height/2});
+    if(cur){if(e.key===' '){e.preventDefault();cur.paused?cur.play().catch(()=>{}):cur.pause()}
+      else if(e.key==='ArrowRight'){e.preventDefault();cur.currentTime=Math.min(cur.duration||1e9,cur.currentTime+5)}
+      else if(e.key==='ArrowLeft'){e.preventDefault();cur.currentTime=Math.max(0,cur.currentTime-5)}
+      else if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();box.scrollBy({top:(e.key==='ArrowDown'?1:-1)*box.clientHeight,behavior:'smooth'})}}
+    return}
+  if(!document.querySelector('#ov [data-pgview]'))return;if(e.key==='ArrowLeft')showPhoto(pvI-1);else if(e.key==='ArrowRight')showPhoto(pvI+1)});
+
+/* ---------- Nav / events ---------- */
+function showTab(t){tab=t;pview=null;document.body.classList.remove('pv');$('#view-post').classList.add('hidden');if(/^#post\//.test(location.hash)){try{history.replaceState(null,'',location.pathname+location.search)}catch(e){}}$('#view-timeline').classList.toggle('hidden',t!=='timeline');$('#view-calendar').classList.toggle('hidden',t!=='calendar');
+  document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));if(t==='calendar')renderCal();window.scrollTo(0,0);wpPaint()}
+function renderAll(){
+  renderProfile();renderProfileBtn();$('#cav').innerHTML=avatarHtml();pills();
+  renderFeed();renderPTabs();if(tab==='calendar')renderCal();if(pview!==null)renderPostView();icons();
+}
+document.addEventListener('click',async e=>{
+  const T=e.target.closest('[data-tab]');if(T)return showTab(T.dataset.tab);
+  if(e.target.id==='ov'||e.target.id==='sheet'){if(e.target.id==='ov')closeOv();return}
+  const H=e.target.closest('[data-hl]');if(H)return showHl(H.dataset.hl);
+  const R=e.target.closest('[data-rm]');if(R){draft.media.splice(+R.dataset.rm,1);return prev()}
+  const X=e.target.closest('[data-hx]');
+  if(X&&hv){const h=hl.find(x=>x.id===hv.id),a=X.dataset.hx;
+    if(a==='close')closeOv();
+    else if(a==='next')hv.i>=h.items.length-1?closeOv():showHl(h.id,hv.i+1);
+    else if(a==='prev')showHl(h.id,hv.i-1);
+    else if(a==='del'){h.items.splice(hv.i,1);await setMeta('hl',hl);showHl(h.id,hv.i);renderProfile();icons()}
+    else if(a==='delhl'&&confirm(tr('Delete this highlight album?'))){hl=hl.filter(x=>x.id!==h.id);await setMeta('hl',hl);closeOv();renderProfile();icons()}
+    return;}
+  const CR=e.target.closest('[data-creset]');if(CR)return resetComposerColor(CR.dataset.creset);
+  const M=e.target.closest('[data-m]');if(M&&M.closest('#moodPills'))return;
+  const A=e.target.closest('[data-act]');if(!A)return;const a=A.dataset.act;
+  if(a==='settings')panelOpen()?closeSettings(true):openSettings();
+  else if(a==='closepanel')closeSettings(true);
+  else if(a==='newpost'){showTab('timeline');setPTab('all');openComposer()}
+  else if(a==='closesheet')closeSheet();
+  else if(a==='cancelst')closeSettings(true)
+  else if(a==='wpdone')wpDone()
+  else if(a==='wpcancel')wpExit()
+  else if(a==='wpzi')wpZoom(WP_STEP)
+  else if(a==='wpzo')wpZoom(-WP_STEP)
+  else if(a==='wpadj'&&WP)wpEnter(WP.blob,WP.zoom,WP.opacity,WP.x,WP.y)
+  else if(a==='wpremove')wpRemove()
+  else if(a==='themetgl'){const t=theme==='dark'?'light':'dark';st.theme=st.orig=t;setTheme(t);A.setAttribute('aria-checked',t==='dark');const l=document.querySelector('[data-thl]');if(l)l.textContent=tr(t==='dark'?'Dark mode':'Light mode');setMeta('theme',t).catch(console.error);try{localStorage.setItem('its-me-theme',t)}catch(e){}}
+  else if(a==='accreset')setAccent(ACC_DEF)
+  else if(a==='custtgl')toggleCust()
+  else if(a==='langtgl')setLang(LANG==='th'?'en':'th')
+  else if(a==='mireset')await resetMood(A.dataset.k)
+  else if(a==='savest'){MI=Object.fromEntries(Object.entries(st.mi).filter(([,v])=>v));await setMeta('mi',MI);await setMeta('theme',st.theme);closeSettings(false);renderAll();drawBadges()}
+  else if(a==='exportjson')exportJson();
+  else if(a==='exportpdf')exportPdf();
+  else if(a==='editpf'){pf={...prof};hlEd={};renderProfile();syncProfileImages()}
+  else if(a==='cancelpf'){pf=null;hlEd=null;renderProfile();syncProfileImages()}
+  else if(a==='savepf'){prof={...pf,name:pf.name.trim()||'Me',avatar:prof.avatar};pf=null;await setMeta('profile',prof);
+    /* Highlights: update the existing albums in place (same id, same photos); a blank name keeps the old one */
+    if(hlEd){const ch=Object.keys(hlEd);if(ch.length){hl=hl.map(h=>{const d=hlEd[h.id];if(!d)return h;return{...h,title:(d.title!==undefined&&d.title.trim())?d.title.trim():h.title,cover:d.cover||h.cover}});await setMeta('hl',hl)}hlEd=null}
+    renderAll()}
+  else if(a==='newhl')hlForm();
+  else if(a==='savehl'){const t=$('#ht').value.trim();if(!t||!hlDraft)return alert(tr('Add a title and a cover image.'));
+    hl.push({id:Date.now()+'',title:t,cover:hlDraft,items:[]});await setMeta('hl',hl);closeSheet();renderProfile();icons()}
+});
+document.addEventListener('change',async e=>{
+  const i=e.target,fs=i.files?[...i.files]:[],f=fs[0];if(!f)return;
+  /* every image picker below opens the shared Image Editor first; Cancel = nothing is applied */
+  if(i.dataset.pf==='avatar'){i.value='';const r=await editImages([f],{preset:'1:1'});if(r.files[0])await setProfileIcon(r.files[0])}
+  else if(i.dataset.hlc){const id=i.dataset.hlc;i.value='';if(!hlEd||!pf)return;const r=await editImages([f],{preset:'1:1'});if(r.files[0]&&hlEd&&pf&&hl.some(x=>x.id===id)){(hlEd[id]=hlEd[id]||{}).cover=r.files[0];renderProfile()}}
+  else if(i.dataset.pf){const k=i.dataset.pf;i.value='';const r=await editImages([f],{preset:k==='banner'?'free':'1:1'});if(r.files[0]){pf[k]=r.files[0];renderProfile();syncProfileImages()}}
+  else if(i.dataset.mi){const k=i.dataset.mi,err=await checkMoodImg(f);if(err){i.value='';$('#mierr').textContent=err;return}i.value='';const r=await editImages([f],{preset:'1:1',maxSide:MI_MAX});if(r.files[0]){st.mi[k]=r.files[0];MI[k]=r.files[0];try{await setMeta('mi',MI)}catch(e){console.error(e)}renderAll();drawBadges();renderSettings()}}
+  else if('wpf' in i.dataset){i.value='';if(!/^image\//.test(f.type)&&!/\.(png|jpe?g|webp|gif)$/i.test(f.name))return alert(tr('Please choose an image file.'));if(f.size>WP_MAX_BYTES)return alert(tr('That image is too large (max 15 MB).'));wpEnter(f,1,WP_DEF_OP,0,0)}
+  else if('imp' in i.dataset){importJson(f);i.value=''}
+  else if('hcover' in i.dataset){i.value='';const r=await editImages([f],{preset:'1:1'});if(r.files[0]){hlDraft=r.files[0];$('#hc').innerHTML=`<img src="${url(hlDraft)}" class="h-full w-full object-cover">`}}
+  else if('hadd' in i.dataset&&hv){i.value='';const r=await editImages(fs,{preset:'orig'});if(!r.files.length||!hv)return;const h=hl.find(x=>x.id===hv.id);if(!h)return;h.items.push(...r.files);await setMeta('hl',hl);showHl(h.id,h.items.length-1);renderProfile();icons()}
+});
+document.addEventListener('input',e=>{
+  const i=e.target,d=i.dataset||{};
+  if(d.c)onComposerColor(d.c,i.value);
+  else if(d.hln&&hlEd&&pf)(hlEd[d.hln]=hlEd[d.hln]||{}).title=i.value;
+  else if(d.ec&&ed)ed[d.ec]=i.value;
+  else if(i.id==='et'&&ed)ed.text=i.value;
+  else if('acc' in d)setAccent(i.value);
+  else if(i.id==='wpop'&&wpPrev){wpDraft.opacity=wpNum(i.value/100,0,1,WP_DEF_OP);wpPaint()}
+});
+document.addEventListener('dblclick',e=>{const n=e.target.closest&&e.target.closest('[data-mname]');if(n&&panelOpen()){e.preventDefault();mEdit=n.dataset.mname;renderSettings()}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(wpPrev)return;closeOv();closeSheet();closeSettings(true)}});
+window.addEventListener('afterprint',()=>{$('#printArea').innerHTML=''});
+
+/* ---------- PWA manifest (inline) ---------- */
+try{
+  const icon='data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="9" fill="#e07a5f"/><rect x="9" y="7" width="14" height="18" rx="2.5" fill="#fff"/></svg>');
+  const l=document.createElement('link');l.rel='manifest';
+  l.href=URL.createObjectURL(new Blob([JSON.stringify({name:'It’s me',short_name:'It’s me',display:'standalone',background_color:'#000000',theme_color:'#000000',start_url:'.',icons:[{src:icon,sizes:'any',type:'image/svg+xml'}]})],{type:'application/manifest+json'}));
+  document.head.appendChild(l);
+}catch(e){}
+
+/* ---------- Init ---------- */
+async function startApp(user){
+  openDb(user.db);
+  let th;
+  try{
+    prof={...prof,...(await getMeta('profile')||{})};hl=(await getMeta('hl'))||[];MI=(await getMeta('mi'))||{};MN=(await getMeta('mn'))||{};MCOL=(await getMeta('mcol'))||{};draft.mc=mcolFor(draft.mood);applyMoodNames();drafts=((await getMeta('drafts'))||[]).map(({tags,tc,...d})=>d);
+    const raw=await allPosts(),legacy=raw.filter(p=>'thread' in p||'ti' in p||'tags' in p||'tc' in p);posts=raw.map(normPost).sort((a,b)=>b.ts-a.ts);await Promise.all(legacy.map(putPost));th=await getMeta('theme');try{await run('meta','readwrite',s=>s.delete('tagc'))}catch(e){}
+  }catch(e){console.error(e);setTimeout(()=>alert(tr('It’s me could not open this browser’s storage, so saved entries may not appear and new ones may not be saved. Turn off private browsing or try another browser.')),300)}
+  try{const ml=await getMeta('lang');if(ml==='th'||ml==='en')LANG=ml}catch(e){}   /* saved language (localStorage was already read in i18n.js) */
+  {const ok=v=>/^#[0-9a-f]{6}$/i.test(v||'');let ls=null,db=null;try{ls=localStorage.getItem('its-me-accent')}catch(e){}try{db=await getMeta('accent')}catch(e){}
+    applyAccent(ok(ls)?ls:ok(db)?db:ACC_DEF)}   /* localStorage is written instantly, so it is never older than the database */
+  if(th!=='dark'&&th!=='light'){try{th=localStorage.getItem('its-me-theme')}catch(e){th=null}}
+  if(th==='dark'||th==='light'){try{localStorage.setItem('its-me-theme',th)}catch(e){}}
+  setTheme(th==='dark'||th==='light'?th:(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'));
+  try{const w=await getMeta('wallpaper');if(w&&w.blob instanceof Blob){WP={blob:w.blob,zoom:wpNum(w.zoom,WP_MIN,WP_MAX,1),opacity:wpNum(w.opacity,0,1,WP_DEF_OP),x:wpNum(w.x,-6,6,0),y:wpNum(w.y,-6,6,0)};wpPaint()}}catch(e){console.error(e)}
+  try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}   /* ask the browser not to evict the saved settings */
+  applyStaticI18n();applyMoodNames();
+  const fitNav=()=>document.documentElement.style.setProperty('--navh',$('#bnav').offsetHeight+'px');fitNav();addEventListener('resize',fitNav);
+  renderComposer();renderAll();showTab('timeline');fitNav();addEventListener('hashchange',route);route();
+}
+startApp({db:'its-me'});   /* no accounts: the diary opens straight away */
+</script>
+</body>
+</html>

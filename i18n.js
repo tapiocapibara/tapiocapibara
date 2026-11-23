@@ -9,6 +9,7 @@ try{const s=localStorage.getItem(LANG_KEY);if(s==='th'||s==='en')LANG=s}catch(e)
 const TH={
 /* page + profile */
 'It’s me – Private Diary':'It’s me – ไดอารี่ส่วนตัว',
+'Remove link preview':'ลบตัวอย่างลิงก์','Loading preview…':'กำลังโหลดตัวอย่าง…',
 'Me':'ฉัน','My private diary.':'ไดอารี่ส่วนตัวของฉัน',
 'Change banner':'เปลี่ยนแบนเนอร์','Display name':'ชื่อที่แสดง','Bio':'ประวัติย่อ',
 'post':'โพสต์','posts':'โพสต์',
@@ -18,8 +19,8 @@ const TH={
 'Customization':'การปรับแต่ง',
 'Reset icon':'รีเซ็ตไอคอน','Edit profile':'แก้ไขโปรไฟล์','New':'ใหม่',
 /* moods */
-'Happy':'มีความสุข','Calm':'สงบ','Neutral':'เฉยๆ','Sad':'เศร้า','Stressed':'เครียด','Excited':'ตื่นเต้น',
-'Mood':'อารมณ์','Choose mood':'เลือกอารมณ์','Mood badge':'ป้ายอารมณ์','(Tag) badge':'ป้าย (แท็ก)','Reset color':'รีเซ็ตสี',
+'Happy':'มีความสุข','Calm':'สงบ','Neutral':'เฉยๆ','Sad':'เศร้า','Stressed':'เครียด','Excited':'ตื่นเต้น','The default name “{n}” is used by another mood. Rename that mood first.':'ชื่อเริ่มต้น “{n}” ถูกใช้โดยอารมณ์อื่นอยู่ กรุณาเปลี่ยนชื่ออารมณ์นั้นก่อน','Tired':'เหนื่อย','Grateful':'ซาบซึ้ง',
+'Mood':'อารมณ์','Choose mood':'เลือกอารมณ์','Mood badge':'ป้ายอารมณ์','Reset color':'รีเซ็ตสี',
 'Another mood already uses that name.':'มีอารมณ์อื่นใช้ชื่อนี้อยู่แล้ว',
 /* highlights */
 'New highlight':'ไฮไลต์ใหม่','Title':'ชื่อเรื่อง','cover':'ปก','Choose cover (image / GIF)':'เลือกปก (รูปภาพ / GIF)',
@@ -28,7 +29,7 @@ const TH={
 'Add a title and a cover image.':'โปรดเพิ่มชื่อเรื่องและรูปปก',
 /* composer + media */
 'How was your day?':'วันนี้เป็นอย่างไรบ้าง?','Add photos':'เพิ่มรูปภาพ','Add a video':'เพิ่มวิดีโอ','Voice note':'บันทึกเสียง',
-'● Recording…':'● กำลังบันทึกเสียง…','(add tag) ⏎':'(เพิ่มแท็ก) ⏎','Remove tag':'ลบแท็ก','(tags) separated by spaces':'(แท็ก) คั่นด้วยการเว้นวรรค',
+'● Recording…':'● กำลังบันทึกเสียง…',
 'Video':'วิดีโอ','photo':'รูปภาพ','video':'วิดีโอ','photos':'รูปภาพ','tap × to remove':'แตะ × เพื่อลบ','limit reached':'ถึงขีดจำกัดแล้ว',
 'Up to {n} photos or videos per post':'สูงสุด {n} รูปภาพหรือวิดีโอต่อโพสต์',
 'Microphone access was denied or is unavailable.':'ไม่ได้รับอนุญาตให้ใช้ไมโครโฟน หรือไม่สามารถใช้ไมโครโฟนได้',
@@ -81,7 +82,7 @@ const TH={
 'Language':'ภาษา','Switch between Thai and English':'สลับระหว่างภาษาไทยและภาษาอังกฤษ',
 'Theme':'ธีม','Dark mode':'โหมดมืด','Light mode':'โหมดสว่าง','Switch light / dark theme':'สลับธีมสว่าง / มืด',
 'Accent color':'สีเน้น','Mood icons':'ไอคอนอารมณ์','Mood name':'ชื่ออารมณ์','Double-click to rename':'ดับเบิลคลิกเพื่อเปลี่ยนชื่อ',
-'Default (tag) badge color':'สีป้ายเริ่มต้น (แท็ก)','Used for posts without a custom tag color':'ใช้กับโพสต์ที่ไม่ได้ตั้งสีแท็กเอง',
+
 'Backup & restore':'สำรองและกู้คืนข้อมูล',
 'It’s me has no accounts. Your diary is stored only in this browser, so back it up regularly. A backup holds all posts, threads, photos, videos, voice notes, highlights, drafts, your profile and settings.':'It’s me ไม่มีระบบบัญชี ไดอารี่ของคุณถูกเก็บไว้ในเบราว์เซอร์นี้เท่านั้น จึงควรสำรองข้อมูลเป็นประจำ ไฟล์สำรองประกอบด้วยโพสต์ เธรด รูปภาพ วิดีโอ บันทึกเสียง ไฮไลต์ แบบร่าง โปรไฟล์ และการตั้งค่าทั้งหมดของคุณ',
 'Back Up Data':'สำรองข้อมูล','Import Backup':'นำเข้าข้อมูลสำรอง','Export diary to PDF':'ส่งออกไดอารี่เป็น PDF',

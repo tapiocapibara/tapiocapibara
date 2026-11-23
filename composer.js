@@ -1,21 +1,23 @@
-/* ---------- Badges: mood + (tag), each with its own background color ---------- */
-const TAGC_DEF='#e07a5f';let TAGC=TAGC_DEF;
+/* ---------- Mood badge (with its own background color) ---------- */
+/* Badge colour the person picked for each mood (meta 'mcol'): new posts start with it until they press ↺ */
+let MCOL={};
+const mcolFor=k=>/^#[0-9a-f]{6}$/i.test(MCOL[k]||'')?MCOL[k]:'';
+const saveMcol=()=>setMeta('mcol',MCOL).catch(console.error);
 const uid=()=>Date.now()+'-'+Math.random().toString(36).slice(2,7);
 const inkOn=c=>{const m=/^#([0-9a-f]{6})$/i.exec(c||'');if(!m)return '#fff';const n=parseInt(m[1],16);return (0.299*(n>>16)+0.587*((n>>8)&255)+0.114*(n&255))>175?'#1a1a1a':'#fff'};
-const emptyDraft=()=>({mood:'neutral',media:[],tags:[],mc:'',tc:''});
+const emptyDraft=()=>({link:null,lpOff:'',mood:'neutral',media:[],mc:mcolFor('neutral')});
 const MAX_MEDIA=6;  /* one shared limit: photos + videos together, max 6 per post (Create Post, Add another post, Edit post) */
 const mediaCount=ms=>ms.filter(m=>m.type==='image'||m.type==='video').length;
-/* Normalise any stored/imported post: drop legacy thread fields, default tags */
-const normPost=p=>{delete p.thread;delete p.ti;p.tags=p.tags||[];delete p.replies;return p};
+/* Normalise any stored/imported post: drop legacy thread fields and the removed Tags fields */
+const normPost=p=>{delete p.thread;delete p.ti;delete p.tags;delete p.tc;delete p.replies;return p};
 const moodBg=p=>p.mc||(MOODS[p.mood]||[])[1]||'#94a3b8';
-const tagBg=p=>p.tc||TAGC;
 const bs=c=>`background:${c};color:${inkOn(c)}`;
 const moodBadge=(p,px=14)=>MOODS[p.mood]?`<span class="mbadge inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs" style="${bs(moodBg(p))}">${mi(p.mood,px)} ${esc(MOODS[p.mood][2])}</span>`:'';
-const tagChip=(t,p,inner='')=>`<span class="tbadge inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold" style="${bs(tagBg(p))}">(${esc(t)})${inner}</span>`;
 
 /* ---------- Mentions: @handle (letters incl. Thai, digits, _) ---------- */
 const MENTION_RE=/(^|[^\p{L}\p{M}\p{N}_@])@([\p{L}\p{M}\p{N}_]{1,30})/gu;
-const rich=t=>esc(t).replace(MENTION_RE,(_,pre,h)=>`${pre}<span class="mention">@${h}</span>`);
+const richPlain=t=>esc(t).replace(MENTION_RE,(_,pre,h)=>`${pre}<span class="mention">@${h}</span>`);
+const rich=t=>lpRich(String(t),richPlain);   /* URLs become links, @mentions still work */
 function insertMention(ta){
   if(!ta)return;
   const v=ta.value,s=ta.selectionStart??v.length,e=ta.selectionEnd??s,pre=v.slice(0,s),sp=pre&&!/\s$/.test(pre)?' ':'';
@@ -63,19 +65,18 @@ function syncBtns(){
   const d=$('#cx-dc');if(d)d.textContent=drafts.length?tr('Drafts ({n})',{n:drafts.length}):tr('Drafts');
 }
 function refreshComposer(){const t=$('#txt');t.style.height='auto';t.style.height=t.scrollHeight+'px';syncBtns()}
-function resetComposer(){tdraft=[];draft=emptyDraft();$('#txt').value='';$('#tg').value='';mediaNote('');renderThreadX();refreshComposer();prev();pills();drawTags()}
+function resetComposer(){tdraft=[];draft=emptyDraft();lpSeq++;lpDraw();$('#txt').value='';mediaNote('');renderThreadX();refreshComposer();prev();pills();drawBadges()}
 function openComposer(){$('#composer').classList.add('open');document.body.style.overflow='hidden';if(typeof wpPaint==='function')wpPaint();setTimeout(()=>$('#txt').focus(),50)}
 function closeComposer(){$('#composer').classList.remove('open');document.body.style.overflow='';closeMoodPop()}
 function cancelComposer(){if((hasContent()||tdraft.some(x=>x.text.trim()||x.media.length))&&!confirm(tr('Discard this post? (Use Drafts to keep it instead.)')))return;resetComposer();closeComposer()}
 async function doPost(){
-  if(($('#tg')||{}).value&&$('#tg').value.trim())addTag();
   const text=$('#txt').value.trim();
   if(!text&&!draft.media.length)return;
   const err=mainMediaError(draft.media);if(err)return mediaNote(err);
   if(!canPost()||posting)return;posting=true;
   try{
-    const base=Date.now(),p={id:uid(),ts:base,text,mood:draft.mood,tags:draft.tags,media:draft.media,mc:draft.mc||'',tc:draft.tc||''};
-    const more=tdraft.map((d,i)=>({id:uid(),ts:base+i+1,text:d.text.trim(),mood:'',tags:[],media:d.media,mc:'',tc:'',tid:p.id,ord:i+1}));
+    const base=Date.now(),p={id:uid(),ts:base,text,mood:draft.mood,media:draft.media,mc:draft.mc||'',link:draft.link||null};
+    const more=tdraft.map((d,i)=>({id:uid(),ts:base+i+1,text:d.text.trim(),mood:'',media:d.media,mc:'',tid:p.id,ord:i+1}));
     if(more.length){p.tid=p.id;p.ord=0}
     await putPost(p);for(const x of more)await putPost(x);
     if(draft.did){drafts=drafts.filter(x=>x.id!==draft.did);await setMeta('drafts',drafts)}
@@ -85,9 +86,9 @@ async function doPost(){
 }
 /* ---------- Drafts (stored in the 'meta' store under key 'drafts') ---------- */
 async function saveDraft(){
-  if(!hasContent())return;if(($('#tg')||{}).value&&$('#tg').value.trim())addTag();
+  if(!hasContent())return;
   drafts=drafts.filter(x=>x.id!==draft.did);
-  drafts.unshift({id:uid(),ts:Date.now(),text:$('#txt').value.trim(),mood:draft.mood,tags:[...draft.tags],mc:draft.mc,tc:draft.tc,media:[...draft.media],extras:tdraft.map(x=>({text:x.text,media:[...x.media]}))});
+  drafts.unshift({id:uid(),ts:Date.now(),link:draft.link||null,text:$('#txt').value.trim(),mood:draft.mood,mc:draft.mc,media:[...draft.media],extras:tdraft.map(x=>({text:x.text,media:[...x.media]}))});
   await setMeta('drafts',drafts);resetComposer();
 }
 function draftsHtml(){
@@ -106,8 +107,8 @@ async function drClick(e){
     const d=drafts.find(x=>x.id===id);if(!d)return;
     if(hasContent()&&!confirm(tr('Replace what you are writing with this draft?')))return;
     tdraft=(d.extras||[]).map(x=>({k:uid(),text:x.text||'',media:[...(x.media||[])]}));
-    draft={mood:d.mood,media:[...d.media],tags:[...d.tags],mc:d.mc,tc:d.tc,did:d.id};$('#txt').value=d.text;
-    closeSheet();refreshComposer();renderThreadX();prev();pills();drawTags();mediaNote('');
+    draft={link:d.link||null,lpOff:'',mood:d.mood,media:[...d.media],mc:d.mc,did:d.id};$('#txt').value=d.text;
+    closeSheet();refreshComposer();renderThreadX();prev();pills();drawBadges();mediaNote('');lpDraw();
   }
 }
 function closeMoodPop(){const p=$('#moodpop'),b=$('#moodbtn');if(p)p.classList.add('hidden');if(b)b.setAttribute('aria-expanded','false')}
@@ -120,7 +121,7 @@ function renderComposer(){
     <div class="flex items-center gap-3"><button type="button" id="cx-dc" class="text-base font-semibold" style="color:var(--brand)">${tr('Drafts')}</button><button id="postm" class="btn pri postbtn" disabled>${tr('Post')}</button></div></div>
   <div class="cmain relative flex min-h-0 flex-1 flex-col">
     <button type="button" id="moodbtn" class="card absolute right-4 top-3 z-10 flex h-11 w-11 items-center justify-center rounded-full border bl shadow-md" aria-label="${tr('Choose mood')}" aria-haspopup="true" aria-expanded="false"></button>
-    <div id="moodpop" class="card absolute right-4 top-16 z-20 hidden rounded-2xl border bl p-2 shadow-lg" role="menu" aria-label="${tr('Mood')}"><div id="moodgrid" class="grid grid-cols-3 gap-1"></div></div>
+    <div id="moodpop" class="card absolute right-4 top-16 z-20 hidden w-[min(22rem,calc(100vw-2rem))] rounded-2xl border bl p-2 shadow-lg" role="menu" aria-label="${tr('Mood')}"><div id="moodgrid" class="grid grid-cols-4 gap-1"></div></div>
     <div class="cscroll min-h-0 flex-1 overflow-y-auto px-4 pt-4 lg:overflow-visible"><div class="flex gap-3"><div id="cav" class="tcol"></div><div class="min-w-0 flex-1">
       <textarea id="txt" rows="2" placeholder="${tr('How was your day?')}" class="w-full resize-none pr-14 text-lg"></textarea>
       <div class="flex items-center gap-1">
@@ -131,43 +132,40 @@ function renderComposer(){
       </div>
       <div id="prev" class="my-2 grid grid-cols-2 gap-2"></div>
       <p id="mnote" class="mute mb-2 text-xs" role="status" aria-live="polite"></p>
-      <div id="tagrow" class="mt-2 flex flex-wrap items-center gap-1"></div>
+      <div id="lprev"></div>
+      <div id="badgerow" class="mt-2 flex flex-wrap items-center gap-1"></div>
       <div id="colrow" class="mt-1 flex flex-wrap items-center gap-3"></div>
     </div></div></div>
     <div class="mx-4 mb-3 mt-3 hidden items-center justify-end border-t bl pt-2 lg:mb-4 lg:flex" style="padding-bottom:env(safe-area-inset-bottom,0px)">
       <span class="inline-flex"><button id="post" class="btn pri postbtn" disabled>${tr('Post')}</button></span></div>
-  </div><datalist id="tl"></datalist>`;
+  </div>`;
   const t=$('#txt');
-  t.oninput=refreshComposer;
+  t.oninput=()=>{refreshComposer();lpWatch()};t.addEventListener('paste',()=>setTimeout(lpWatch,0));
   $('#moodbtn').onclick=()=>{const p=$('#moodpop'),open=p.classList.contains('hidden');p.classList.toggle('hidden',!open);$('#moodbtn').setAttribute('aria-expanded',String(open))};
-  $('#moodgrid').onclick=e=>{const b=e.target.closest('[data-m]');if(!b)return;draft.mood=b.dataset.m;draft.mc='';pills();drawTags();closeMoodPop()};
+  $('#moodgrid').onclick=e=>{const b=e.target.closest('[data-m]');if(!b)return;draft.mood=b.dataset.m;draft.mc=mcolFor(draft.mood);pills();drawBadges();closeMoodPop()};
   $('#fl').onchange=e=>{const fs=[...e.target.files];e.target.value='';addMedia(fs,'image')};   /* no automatic Image Editor */
   $('#flv').onchange=e=>{const fs=[...e.target.files];e.target.value='';addMedia(fs,'video')};
   $('#mic').onclick=toggleRec;
   $('#cx-cancel').onclick=cancelComposer;$('#cx-dc').onclick=openDrafts;
   $('#post').onclick=doPost;$('#postm').onclick=doPost;
-  drawTags();renderThreadX();syncBtns();icons();
+  drawBadges();renderThreadX();syncBtns();icons();lpDraw();
   if(typeof wpPaint==='function')wpPaint();   /* wallpaper layer inside this window */
 }
-function addTag(){const i=$('#tg');if(!i)return;const v=i.value.replace(/[#(),\s]+/g,' ').trim();v.split(' ').filter(Boolean).forEach(x=>{if(!draft.tags.includes(x))draft.tags.push(x)});i.value='';drawTags(true)}
-function drawTags(keep,noCol){
-  const old=($('#tg')||{}).value||'';
-  $('#tagrow').innerHTML=moodBadge(draft)+draft.tags.map((t,i)=>tagChip(t,draft,` <button data-rtag="${i}" aria-label="${tr('Remove tag')}">×</button>`)).join('')+`<input id="tg" list="tl" placeholder="${tr('(add tag) ⏎')}" class="min-w-[110px] flex-1 text-sm">`;
-  const i=$('#tg');i.value=old;i.onkeydown=e=>{if(e.key==='Enter'||e.key===','){e.preventDefault();addTag();$('#tg').focus()}};i.onblur=()=>{if(i.value.trim())addTag()};
-  const row=(k,label,v)=>`<span class="mute inline-flex items-center gap-1 text-xs">${label}<input type="color" data-c="${k}" value="${v}" class="h-6 w-6 cursor-pointer rounded border-0 bg-transparent p-0"><button class="tag" data-creset="${k}" title="${tr('Reset color')}" aria-label="${tr('Reset color')}">↺</button></span>`;
-  if(!noCol)$('#colrow').innerHTML=(draft.mood&&MOODS[draft.mood]?row('mc',tr('Mood badge'),moodBg(draft)):'')+(draft.tags.length?row('tc',tr('(Tag) badge'),tagBg(draft)):'');
-  if(keep)i.focus();
+function drawBadges(noCol){
+  $('#badgerow').innerHTML=moodBadge(draft);
+  const row=(k,label,v)=>`<span class="mute inline-flex items-center gap-1 text-xs">${label}<input type="color" data-c="${k}" value="${v}" class="h-6 w-6 cursor-pointer rounded border-0 bg-transparent p-0"><button class="lnk" data-creset="${k}" title="${tr('Reset color')}" aria-label="${tr('Reset color')}">↺</button></span>`;
+  if(!noCol)$('#colrow').innerHTML=draft.mood&&MOODS[draft.mood]?row('mc',tr('Mood badge'),moodBg(draft)):'';
 }
 function pills(){
   if(!draft.mood||!MOODS[draft.mood])draft.mood='neutral';
   const btn=$('#moodbtn');if(btn){btn.innerHTML=mi(draft.mood,26);btn.title=MOODS[draft.mood][2]}
   const g=$('#moodgrid');if(!g)return;
-  g.innerHTML=Object.entries(MOODS).map(([k,m])=>{const on=draft.mood===k;return `<button type="button" role="menuitemradio" aria-checked="${on}" data-m="${k}" class="flex w-20 flex-col items-center gap-1 rounded-xl p-2 text-xs" style="${on?'background:rgba(var(--brand-rgb),.16);box-shadow:inset 0 0 0 2px var(--brand)':''}">${mi(k,28)}<span style="color:var(--ink)">${esc(m[2])}</span></button>`}).join('');
+  g.innerHTML=Object.entries(MOODS).map(([k,m])=>{const on=draft.mood===k;return `<button type="button" role="menuitemradio" aria-checked="${on}" data-m="${k}" class="flex min-w-0 flex-col items-center gap-1 rounded-xl p-2 text-xs" style="${on?'background:rgba(var(--brand-rgb),.16);box-shadow:inset 0 0 0 2px var(--brand)':''}">${mi(k,28)}<span class="w-full truncate text-center" style="color:var(--ink)">${esc(m[2])}</span></button>`}).join('');
 }
 
 /* ---------- Colour handlers (called from index.html) ---------- */
-function onComposerColor(k,v){draft[k]=v;pills();drawTags(false,true)}
-function resetComposerColor(k){draft[k]='';pills();drawTags()}
+function onComposerColor(k,v){draft[k]=v;if(k==='mc'&&draft.mood&&/^#[0-9a-f]{6}$/i.test(v)){MCOL[draft.mood]=v.toLowerCase();saveMcol()}pills();drawBadges(true)}
+function resetComposerColor(k){draft[k]='';if(k==='mc'&&draft.mood&&MCOL[draft.mood]){delete MCOL[draft.mood];saveMcol()}pills();drawBadges()}
 
 /* ---------- Manual Image Editor (Create Post + Add another post) ----------
    Photos are attached directly. The existing shared editor opens only when the pencil on a preview is clicked.

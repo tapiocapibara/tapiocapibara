@@ -154,7 +154,7 @@ async function addToThread(){
   try{
     if(!p.tid){p.tid=p.id;p.ord=0;await putPost(p)}   /* a standalone post becomes the first post of a thread */
     const ord=Math.max(0,...threadOf(p).map(x=>x.ord||0))+1;
-    const np={id:uid(),ts:Date.now(),text,mood:'',tags:[],media:d.media,mc:'',tc:'',tid:p.tid,ord};
+    const np={id:uid(),ts:Date.now(),text,mood:'',media:d.media,mc:'',tid:p.tid,ord};
     await putPost(np);posts=[...posts,np].sort((a,b)=>b.ts-a.ts);adraft=newAdd(p.tid);adraft.open=true;renderAll();focusMini('add');
     const el=document.querySelector(`#pv [data-open="${np.id}"]`);if(el)el.scrollIntoView({block:'nearest',behavior:'smooth'});
   }catch(e){console.error(e);alert(tr('Could not save the post. Please try again.'));if(btn)btn.disabled=false}
