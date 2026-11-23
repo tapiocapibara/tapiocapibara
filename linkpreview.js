@@ -55,6 +55,28 @@ function lpRich(text,plain){
   return out+plain(text.slice(last));
 }
 
+/* When a post shows a Link Preview card, its source URL is hidden from the text so the link isn't shown twice.
+   Only the URL the card was made from is removed (same address, or the only URL in the text); any other URL stays
+   as a normal clickable link. No card (preview failed / removed) → text is returned unchanged. */
+const lpKey=u=>{try{const x=new URL(u);return x.hostname.replace(/^www\./,'').toLowerCase()+x.pathname.replace(/\/+$/,'')+x.search}catch(e){return u}};
+function lpStrip(text,link){
+  text=String(text||'');if(!link||!lpHttp(link.url))return text;
+  const re=new RegExp(LP_URL_RE.source,'gi'),hits=[];let m;
+  while((m=re.exec(text))){const raw=lpClean(m[0]),u=lpHttp(raw);if(!u)continue;hits.push({i:m.index,e:m.index+raw.length,k:lpKey(u)});re.lastIndex=m.index+raw.length}
+  if(!hits.length)return text;
+  const lk=lpKey(link.url);let rm=hits.filter(h=>h.k===lk);
+  if(!rm.length&&hits.length===1)rm=hits;
+  if(!rm.length)return text;
+  let out='',last=0;
+  for(const h of rm){
+    let s=h.i;const after=text[h.e];
+    if(s>0&&/[ \t]/.test(text[s-1])&&(after===undefined||/[\s]/.test(after)))s--;   /* no double space where the URL was */
+    out+=text.slice(last,s);last=h.e;
+  }
+  out+=text.slice(last);
+  return out.replace(/[ \t]+\n/g,'\n').replace(/\n{3,}/g,'\n\n').trim();
+}
+
 /* Composer: detect a pasted/typed URL, fetch, show the card under the text box */
 let lpTimer=0,lpSeq=0;
 function lpDraw(loading){const el=document.querySelector('#lprev');if(el)el.innerHTML=loading?lpLoading():linkCard(draft.link,'main')}
